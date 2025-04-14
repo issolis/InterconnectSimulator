@@ -54,6 +54,7 @@
         "mutex": "cpp",
         "fstream": "cpp",
         "optional": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "cstring": "cpp"
     }
 }

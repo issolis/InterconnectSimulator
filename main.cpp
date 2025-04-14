@@ -41,7 +41,7 @@ int main() {
         t.join();
     }
 
-    stack->showStack(); 
+    //stack->showStack(); 
 
     interconnectBus.join(); 
     

@@ -17,7 +17,7 @@ class InstructionList
         std::atomic<int> size; 
         std::mutex listMutex; 
         InstructionList();
-        void executeStackOperation(int op, std::string instr);
+        char* executeStackOperation(int op, std::string instr);
         void addInstr(std::string &instr);
         void popInstr(); 
         void showStack();
