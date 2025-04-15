@@ -8,8 +8,10 @@ class InstructionMemory
 private:
     
 public:
-    InstructionMemory(std::string initializerFileName);
+    
+    InstructionMemory(std::string& initializerFileName);
     void addInstruction(std::string instr); 
+    void popInstr(); 
     void showInstructionMemory(); 
     Instruction *head; 
     Instruction *nextInstruction; 

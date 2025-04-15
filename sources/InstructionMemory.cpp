@@ -2,7 +2,9 @@
 #include <fstream>
 
 
-InstructionMemory::InstructionMemory(std::string initializerFileName){
+
+InstructionMemory::InstructionMemory(std::string &initializerFileName)
+{
     head = nullptr; 
     nextInstruction = nullptr; 
 
@@ -12,7 +14,8 @@ InstructionMemory::InstructionMemory(std::string initializerFileName){
     file.close();
 }
 
-void InstructionMemory::addInstruction(std::string instr){
+void InstructionMemory::addInstruction(std::string instr)
+{
     Instruction *newInstruction = new Instruction(instr);
     
     if (head == nullptr)
@@ -24,6 +27,21 @@ void InstructionMemory::addInstruction(std::string instr){
     }
 }
 
+void InstructionMemory::popInstr()
+{
+    if(head == nullptr){
+        return;
+    } else if (head->getNextInstr() == nullptr){
+        head = nullptr;
+        
+    } else {
+
+        Instruction *newHead = head->getNextInstr(); 
+        delete head; 
+        head = newHead;
+      
+    }
+}
 void InstructionMemory::showInstructionMemory(){
     Instruction *currentInstruction = head; 
     std::cout << "__________INSTRUCTION MEMORY___________"<< std::endl; 

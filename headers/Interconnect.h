@@ -3,6 +3,8 @@
 
 #include "InstructionList.h"
 #include <iostream>
+#include <vector>
+#include <thread>
 #include <mutex>
 #include <thread>
 
@@ -13,10 +15,18 @@ private:
     
 
 public:
+
+    Interconnect(InstructionList& stack, InstructionList& responseStack, std::vector<std::thread>& responseThreads);
+    
     InstructionList* stack; 
+    InstructionList* responseStack; 
+    std::vector<std::thread>* responseThreads;
+
     std::thread monitor; 
     std::atomic<bool> running{false}; 
-    Interconnect(InstructionList& stack);
+    
+    void interconectSendingFunction(std::string instr);
+    void processorThread(std::string instr);
     void receiveMessage();
     void showStack();
     void startMonitoring();

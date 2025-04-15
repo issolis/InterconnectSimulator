@@ -4,6 +4,13 @@
 #include <vector>
 #include <chrono>
 
+
+Proccesor::Proccesor(InstructionList &stack, std::vector<std::thread>& workers, std::string& fileName) {
+    this->stack = &stack;
+    this->workers = &workers; 
+    instrMem = new InstructionMemory(fileName); 
+}
+
 enum class state {
     READ, 
     EXECUTE, 
@@ -17,10 +24,7 @@ struct thread_context {
     int start_size {0};
     bool committed {false};
 };
-Proccesor::Proccesor(InstructionList &stack, std::vector<std::thread>& workers) {
-    this->stack = &stack;
-    this->workers = &workers; 
-}
+
 
 void Proccesor::processorThreadFunction(std::string instr) {
     thread_context ctx;
@@ -55,4 +59,12 @@ void Proccesor::processorThreadFunction(std::string instr) {
 
 void Proccesor::processorThread(std::string instr) {
     workers->emplace_back(&Proccesor::processorThreadFunction, this, instr);
+}
+
+void Proccesor::sendOneInstruction(){
+    if (instrMem->head != nullptr){
+        std::string instr = instrMem->head->getInstr();
+        instrMem->popInstr();
+        processorThread(instr); 
+    }
 }

@@ -12,15 +12,20 @@ class InstructionList
         
     
     public:
+
+    InstructionList();
+
         Instruction *head; 
         Instruction *last;
+
         std::atomic<int> size; 
         std::mutex listMutex; 
-        InstructionList();
-        char* executeStackOperation(int op, std::string instr);
+        
         void addInstr(std::string &instr);
         void popInstr(); 
         void showStack();
+
+        char* executeStackOperation(int op, std::string instr);
         InstructionList* copy();
 };
 
