@@ -29,7 +29,7 @@ public:
     void processorThread(std::string instr);
     void receiveMessage();
     void showStack();
-    void startMonitoring();
+    void startSnooping();
     void join();
 };
 

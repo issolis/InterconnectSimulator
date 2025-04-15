@@ -6,7 +6,7 @@ Interconnect::Interconnect(InstructionList& stack, InstructionList& responseStac
     this->stack = &stack;
     this->responseThreads = &responseThreads; 
     this->responseStack = &responseStack; 
-    startMonitoring(); 
+    startSnooping(); 
 }
 
 enum class state {
@@ -83,7 +83,7 @@ void Interconnect::showStack(){
 
 }
 
-void Interconnect::startMonitoring() {
+void Interconnect::startSnooping() {
     running = true;
     monitor = std::thread([this]() {
         while (running) {
