@@ -9,10 +9,10 @@
 class ProcessorRead {
 public:
 
-    ProcessorRead(InstructionList &readStack, std::vector<std::thread>& worker);
+    ProcessorRead(InstructionList &readStack, std::vector<std::thread>& worker, int id);
     std::vector<std::thread>* workers;
     InstructionList *readStack;
-    
+    int id; 
     void processorThreadFunction();
     void processorThread();
 

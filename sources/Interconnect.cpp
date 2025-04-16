@@ -2,10 +2,9 @@
 #include <iostream>
 #include <cstring>
 
-Interconnect::Interconnect(InstructionList& stack, InstructionList& responseStack, std::vector<std::thread>& responseThreads) {
-    this->stack = &stack;
-    this->responseThreads = &responseThreads; 
-    this->responseStack = &responseStack; 
+Interconnect::Interconnect(InstructionList& stack,  List& stacks) {
+    this->stack = &stack; 
+    this->stacks = &stacks; 
     startSnooping(); 
 }
 
@@ -23,29 +22,38 @@ struct thread_context {
     bool committed {false};
 };
 
-
 void Interconnect::receiveMessage( ){ 
     if (strcmp(stack->executeStackOperation(3, "NOINSTR"), "notnull") == 0) {
         char* instr = stack->executeStackOperation(4, "NOINSTR"); 
         stack->executeStackOperation(2, "NOINSTR"); 
-
-
-        if (strcmp(instr, "WRITE 1") == 0) {
-            //std:: cout << "EXECUTING WRITE" << std::endl; 
-            responseStack->executeStackOperation(1, "WRITE RESPONSE"); 
-            //responseStack->showStack(); 
-
+        if (strcmp(instr, "WRITE '") == 0) {
+            std:: cout << "EXECUTING WRITE 1 TO P0" << std::endl; 
+            stacks->getListByPos(0)->getList()->executeStackOperation(1, "WRITE RESPONSE"); 
         }
-        if (strcmp(instr, "READ 1") == 0) {
-            //std:: cout << "EXECUTING READ" << std::endl; 
-            responseStack->executeStackOperation(1, "READ RESPONSE"); 
-            //responseStack->showStack(); 
+        else if (strcmp(instr, "READ 0") == 0) {
+            std:: cout << "EXECUTING READ 1 TO P0" << std::endl; 
+            stacks->getListByPos(0)->getList()->executeStackOperation(1, "READ RESPONSE");
         }
-
+        else if (strcmp(instr, "WRITE 1") == 0) {
+            std:: cout << "EXECUTING WRITE 2 TO P1" << std::endl; 
+            stacks->getListByPos(1)->getList()->executeStackOperation(1, "WRITE RESPONSE");
+        }
+        else if (strcmp(instr, "READ 1") == 0) {
+            std:: cout << "EXECUTING READ 2 TO P1" << std::endl; 
+            stacks->getListByPos(1)->getList()->executeStackOperation(1, "READ RESPONSE");
+        }
+        else if (strcmp(instr, "WRITE 2") == 0) {
+            std:: cout << "EXECUTING WRITE 2 TO P2" << std::endl; 
+            stacks->getListByPos(2)->getList()->executeStackOperation(1, "WRITE RESPONSE");
+        }
+        else if (strcmp(instr, "READ 2") == 0) {
+            std:: cout << "EXECUTING READ 2 TO P2" << std::endl; 
+            stacks->getListByPos(2)->getList()->executeStackOperation(1, "READ RESPONSE");
+        }
     }
 }
-void Interconnect::showStack(){
 
+void Interconnect::showStack(){
 }
 
 void Interconnect::startSnooping() {

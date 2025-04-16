@@ -7,6 +7,8 @@
 #include <thread>
 #include <mutex>
 #include <thread>
+#include "List.h"
+#include "List.h"
 
 
 class Interconnect
@@ -16,9 +18,10 @@ private:
 
 public:
 
-    Interconnect(InstructionList& stack, InstructionList& responseStack, std::vector<std::thread>& responseThreads);
+    Interconnect(InstructionList& stack, List& stacks);
     
     InstructionList* stack; 
+    List* stacks;
     InstructionList* responseStack; 
     std::vector<std::thread>* responseThreads;
 

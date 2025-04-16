@@ -1,9 +1,10 @@
 #include "ProcessorRead.h"
 #include <cstring>
 
-ProcessorRead::ProcessorRead(InstructionList &readStack, std::vector<std::thread> &workers){
+ProcessorRead::ProcessorRead(InstructionList &readStack, std::vector<std::thread> &workers, int id){
     this->readStack = &readStack;
     this->workers = &workers; 
+    this->id = id; 
 }
 
 enum class state {
@@ -35,7 +36,16 @@ void ProcessorRead::processorThreadFunction() {
                 break;
             case state::VALIDATE:
                 if (readStack->size.load() == ctx.start_size) {
-                    std::cout << "HELLO" << std::endl; 
+                    if (strcmp(readStack->executeStackOperation(3, "NOINSTR"), "notnull") == 0) {
+                        char* instr = readStack->executeStackOperation(4, "NOINSTR"); 
+                        readStack->executeStackOperation(2, "NOINSTR"); 
+                        if (strcmp(instr, "WRITE RESPONSE") == 0) {
+                            std:: cout << "EXECUTED W FROM P" << id << std::endl; 
+                        }
+                        else if (strcmp(instr, "READ RESPONSE") == 0) {
+                            std:: cout << "EXECUTED R FROM P" << id <<  std::endl; 
+                        }                
+                    }
                    ctx.current_state = state::RETRY;
                 } else {
                     ctx.current_state = state::RETRY;
