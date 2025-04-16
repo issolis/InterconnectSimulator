@@ -50,7 +50,7 @@ int main() {
     for (int i = 0; i < 8; i++) {
         processorsRead[i].processorThread(); 
     }
-    for(int j = 0; j<5; j++){
+    for(int j = 0; j<10; j++){
         for (int i = 0; i < 8; i++) {
             processors[i].sendOneInstruction(); 
         }

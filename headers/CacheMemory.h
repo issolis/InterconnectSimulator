@@ -16,6 +16,7 @@ class CacheMemory{
         void writeMem(int address, uint16_t value);
         void changeMemState(int address, std::string state);
         void showMem(); 
+        std::string getData(int numLines, int startLine); 
         
 }; 
 

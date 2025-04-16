@@ -26,30 +26,58 @@ void Interconnect::receiveMessage( ){
     if (strcmp(stack->executeStackOperation(3, "NOINSTR"), "notnull") == 0) {
         char* instr = stack->executeStackOperation(4, "NOINSTR"); 
         stack->executeStackOperation(2, "NOINSTR"); 
-        if (strcmp(instr, "WRITE '") == 0) {
-            std:: cout << "EXECUTING WRITE 1 TO P0" << std::endl; 
-            stacks->getListByPos(0)->getList()->executeStackOperation(1, "WRITE RESPONSE"); 
+        
+        std::string strInstr(instr);
+        std::string writeInstr = strInstr.substr(0, 9); 
+        
+        if (writeInstr == "WRITE_MEM"){
+            int comas[3] = {-1, -1, -1};
+            int count = 0;
+
+
+            std::cout << writeInstr << std::endl; 
+
+            for (int i = 0; i < strInstr.length(); i++){
+                if (instr[i] == ',' && count < 3){
+                    comas[count] = i;
+                    count++;
+                }
+            }
+            
+            std::string src       = strInstr.substr(10, comas[0] - 10);
+            std::string address   = strInstr.substr(comas[0] + 1, comas[1] - comas[0] - 1);
+            std::string data      = strInstr.substr(comas[1] + 1, comas[2] - comas[1] - 1);
+            std::string QoS       = strInstr.substr(comas[2] + 1);
+
+            
+            if (src == "0"){
+                stacks->getListByPos(0)->getList()->executeStackOperation(1, "WRITE RESPONSE");
+            }
+            else if (src == "1"){
+                stacks->getListByPos(1)->getList()->executeStackOperation(1, "WRITE RESPONSE");
+            }
+            else if (src == "2"){
+                stacks->getListByPos(2)->getList()->executeStackOperation(1, "WRITE RESPONSE");
+            }
+            else if (src == "3"){
+                stacks->getListByPos(3)->getList()->executeStackOperation(1, "WRITE RESPONSE");
+            }
+            else if (src == "4"){
+                stacks->getListByPos(4)->getList()->executeStackOperation(1, "WRITE RESPONSE");
+            }
+            else if (src == "5"){
+                stacks->getListByPos(5)->getList()->executeStackOperation(1, "WRITE RESPONSE");
+            }
+            else if (src == "6"){
+                stacks->getListByPos(6)->getList()->executeStackOperation(1, "WRITE RESPONSE");
+            }
+            else if (src == "7"){
+                stacks->getListByPos(7)->getList()->executeStackOperation(1, "WRITE RESPONSE");
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+            
         }
-        else if (strcmp(instr, "READ 0") == 0) {
-            std:: cout << "EXECUTING READ 1 TO P0" << std::endl; 
-            stacks->getListByPos(0)->getList()->executeStackOperation(1, "READ RESPONSE");
-        }
-        else if (strcmp(instr, "WRITE 1") == 0) {
-            std:: cout << "EXECUTING WRITE 2 TO P1" << std::endl; 
-            stacks->getListByPos(1)->getList()->executeStackOperation(1, "WRITE RESPONSE");
-        }
-        else if (strcmp(instr, "READ 1") == 0) {
-            std:: cout << "EXECUTING READ 2 TO P1" << std::endl; 
-            stacks->getListByPos(1)->getList()->executeStackOperation(1, "READ RESPONSE");
-        }
-        else if (strcmp(instr, "WRITE 2") == 0) {
-            std:: cout << "EXECUTING WRITE 2 TO P2" << std::endl; 
-            stacks->getListByPos(2)->getList()->executeStackOperation(1, "WRITE RESPONSE");
-        }
-        else if (strcmp(instr, "READ 2") == 0) {
-            std:: cout << "EXECUTING READ 2 TO P2" << std::endl; 
-            stacks->getListByPos(2)->getList()->executeStackOperation(1, "READ RESPONSE");
-        }
+        
     }
 }
 
