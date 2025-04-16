@@ -7,6 +7,7 @@
 #include "Interconnect.h"
 #include "InstructionMemory.h"
 #include "Proccesor.h"
+#include "ProcessorRead.h"
 
 
 
@@ -24,6 +25,7 @@ int main() {
 
     Interconnect interconnectBus = Interconnect(*stack, *responseStack, *responseThreads);
     std::vector<Proccesor> processors; 
+    std::vector<ProcessorRead> processorsRead; 
 
 
     std::string paths[8] = {"InstructionsFile/InstructionsP1.txt", "InstructionsFile/InstructionsP2.txt", "InstructionsFile/InstructionsP3.txt",
@@ -34,20 +36,19 @@ int main() {
     std::string stringList[5] = {"WRITE", "READ", "INV", "INVALIDATEALL", "RESPONSE"};
 
     
-         for (int i = 0; i < 8; ++i) {
-            processors.emplace_back(*stack, *workers, paths[i]);
-        }
-
-
-    
-    for (int i = 0; i < 5; ++i) {
-        processors[i].sendOneInstruction(); 
+    for (int i = 0; i < 8; i++) {
+        processors.emplace_back(*stack, *workers, paths[i]);
+        processorsRead.emplace_back(*responseStack, *responseThreads);
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-    for (int i = 0; i < 5; ++i) {
-        processors[i].sendOneInstruction(); 
+    for (int i = 0; i < 8; i++) {
+        processorsRead[i].processorThread(); 
+    }
+    for(int j = 0; j<50; j++){
+        for (int i = 0; i < 8; i++) {
+            processors[i].sendOneInstruction(); 
+        }
     }
 
 

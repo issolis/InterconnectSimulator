@@ -24,9 +24,7 @@ public:
 
     std::thread monitor; 
     std::atomic<bool> running{false}; 
-    
-    void interconectSendingFunction(std::string instr);
-    void processorThread(std::string instr);
+  
     void receiveMessage();
     void showStack();
     void startSnooping();
