@@ -72,6 +72,7 @@ void Proccesor::sendOneInstruction(){
 
 std::string Proccesor::manipulateInstruction(std::string &instr){
     std::string writeInstr = instr.substr(0, 9); 
+    std::string readInstr = instr.substr(0,8);
 
     if (writeInstr == "WRITE_MEM"){
         int comas[4] = {-1, -1, -1, -1};
@@ -97,7 +98,9 @@ std::string Proccesor::manipulateInstruction(std::string &instr){
         std::string newInstr = "WRITE_MEM " + src + "," + address + "," + data + "," + QoS;
 
         return newInstr; 
-    }
+    } else if (readInstr == "READ_MEM"){
+
+    } 
     return instr; 
 }
 

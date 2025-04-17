@@ -29,13 +29,12 @@ void Interconnect::receiveMessage( ){
         
         std::string strInstr(instr);
         std::string writeInstr = strInstr.substr(0, 9); 
+        std::string readInstr = strInstr.substr(0, 8); 
+        std::string broadcastInv = strInstr.substr(0,20); 
         
         if (writeInstr == "WRITE_MEM"){
             int comas[3] = {-1, -1, -1};
             int count = 0;
-
-
-            std::cout << writeInstr << std::endl; 
 
             for (int i = 0; i < strInstr.length(); i++){
                 if (instr[i] == ',' && count < 3){
@@ -76,6 +75,58 @@ void Interconnect::receiveMessage( ){
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(300));
             
+        }
+        else if(readInstr == "READ_MEM"){
+            int comas[3] = {-1, -1, -1};
+            int count = 0;
+            
+            for (int i = 0; i < strInstr.length(); i++){
+                if (instr[i] == ',' && count < 3){
+                    comas[count] = i;
+                    count++;
+                }
+            }
+
+            std::string src       = strInstr.substr(9, comas[0]  - 9);
+            std::string address   = strInstr.substr(comas[0] + 1, comas[1] - comas[0] - 1);
+            std::string size      = strInstr.substr(comas[1] + 1, comas[2] - comas[1] - 1);
+            std::string QoS       = strInstr.substr(comas[2] + 1);
+
+            if (src == "0"){
+                stacks->getListByPos(0)->getList()->executeStackOperation(1, "READ RESPONSE");
+            }
+            else if (src == "1"){
+                stacks->getListByPos(1)->getList()->executeStackOperation(1, "READ RESPONSE");
+            }            else if (src == "2"){
+                stacks->getListByPos(2)->getList()->executeStackOperation(1, "READ RESPONSE");
+            }            else if (src == "3"){
+                stacks->getListByPos(3)->getList()->executeStackOperation(1, "READ RESPONSE");
+            }            else if (src == "4"){
+                stacks->getListByPos(4)->getList()->executeStackOperation(1, "READ RESPONSE");
+            }            else if (src == "5"){
+                stacks->getListByPos(5)->getList()->executeStackOperation(1, "READ RESPONSE");
+            }            else if (src == "6"){
+                stacks->getListByPos(6)->getList()->executeStackOperation(1, "READ RESPONSE");
+            }            else if (src == "7"){
+                stacks->getListByPos(7)->getList()->executeStackOperation(1, "READ RESPONSE");
+            }        
+        }
+        else if (broadcastInv == "BROADCAST_INVALIDATE"){
+            int comas[3] = {-1, -1};
+            int count = 0;
+            
+            for (int i = 0; i < strInstr.length(); i++){
+                if (instr[i] == ',' && count < 2){
+                    comas[count] = i;
+                    count++;
+                }
+            }
+
+            std::string src       = strInstr.substr(21, comas[0]  - 21);
+            std::string cacheLine   = strInstr.substr(comas[0] + 1, comas[1] - comas[0] - 1);
+            std::string QoS       = strInstr.substr(comas[1] + 1);
+
+            std::cout << src << "/" << cacheLine << "/" << QoS << std::endl;
         }
         
     }
