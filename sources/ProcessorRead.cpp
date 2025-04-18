@@ -44,6 +44,9 @@ void ProcessorRead::processorThreadFunction() {
                         }
                         else if (strcmp(instr, "READ RESPONSE") == 0) {
                             std:: cout << "EXECUTED R FROM P" << id <<  std::endl; 
+                        }  
+                        else if (strcmp(instr, "INVALIDATE RESPONSE") == 0) {
+                            std:: cout << "EXECUTED I FROM P" << id <<  std::endl; 
                         }                
                     }
                    ctx.current_state = state::RETRY;
