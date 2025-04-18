@@ -16,7 +16,7 @@ int main() {
     std::cout<< "PROGRAM EXECUTION" << std::endl << std::endl << std::endl << std::endl << std::endl;
     
     std::vector<std::thread>* workers = new std::vector<std::thread>();
-    InstructionList *readStack = new InstructionList ();   
+    InstructionList *writeStack = new InstructionList ();   
    
     std::vector<ProcessorWrite> processorsWrite; 
     std::vector<ProcessorRead> processorsRead; 
@@ -28,27 +28,35 @@ int main() {
 
 
     List *stackList = new List(); 
+    List *writeCacheStack = new List();
+    List *readCacheStack = new List();
+
+
     for (int i = 0; i < 8; i++){
         stackList->insertList(i); 
+        readCacheStack->insertList(i);
+        writeCacheStack->insertList(i);
     }
 
-    Interconnect interconnectBus = Interconnect(*readStack, *stackList);
+    Interconnect interconnectBus = Interconnect(*writeStack, *stackList, *readCacheStack);
 
     
     std::string stringList[5] = {"WRITE", "READ", "INV", "INVALIDATEALL", "RESPONSE"};
 
     
     for (int i = 0; i < 8; i++) {
-        processors.emplace_back(*stackList->getListByPos(i)->getList(), *readStack, *workers, paths[i], i);
+        processors.emplace_back(*stackList->getListByPos(i)->getList(), *writeStack, *readCacheStack->getListByPos(i)->getList(), *writeCacheStack->getListByPos(i)->getList(), *workers, paths[i], i);
     }
 
 
     for (int i = 0; i < 8; i++) {
         processors[i].processorRead->processorThread(); 
+        processors[i].processorCache->processorThread();
     }
     for(int j = 0; j<10; j++){
         for (int i = 0; i < 8; i++) {
             processors[i].processorWrite->sendOneInstruction(); 
+         
         }
     }
 

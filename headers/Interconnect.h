@@ -18,10 +18,11 @@ private:
 
 public:
 
-    Interconnect(InstructionList& stack, List& stacks);
+    Interconnect(InstructionList& stack, List& stacks, List& cacheReadList);
     
     InstructionList* stack; 
     List* stacks;
+    List* cacheReadList;
     InstructionList* responseStack; 
     std::vector<std::thread>* responseThreads;
 
