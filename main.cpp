@@ -6,9 +6,8 @@
 #include "InstructionList.h"
 #include "Interconnect.h"
 #include "InstructionMemory.h"
-#include "Proccesor.h"
-#include "ProcessorRead.h"
 #include "List.h"
+#include "Processor.h"
 
 
 
@@ -17,13 +16,11 @@ int main() {
     std::cout<< "PROGRAM EXECUTION" << std::endl << std::endl << std::endl << std::endl << std::endl;
     
     std::vector<std::thread>* workers = new std::vector<std::thread>();
-    std::vector<std::thread>* responseThreads = new std::vector<std::thread>();
-    std::atomic<int> total_successes{0};
-    InstructionList *stack = new InstructionList ();    
-    InstructionList *responseStack = new InstructionList ();  
+    InstructionList *readStack = new InstructionList ();   
    
-    std::vector<Proccesor> processors; 
+    std::vector<ProcessorWrite> processorsWrite; 
     std::vector<ProcessorRead> processorsRead; 
+    std::vector<Processor> processors;
     std::vector<InstructionList> readStacks; 
     std::string paths[8] = {"InstructionsFile/InstructionsP1.txt", "InstructionsFile/InstructionsP2.txt", "InstructionsFile/InstructionsP3.txt",
         "InstructionsFile/InstructionsP4.txt", "InstructionsFile/InstructionsP5.txt", "InstructionsFile/InstructionsP6.txt", "InstructionsFile/InstructionsP7.txt",
@@ -35,24 +32,23 @@ int main() {
         stackList->insertList(i); 
     }
 
-    Interconnect interconnectBus = Interconnect(*stack, *stackList);
+    Interconnect interconnectBus = Interconnect(*readStack, *stackList);
 
     
     std::string stringList[5] = {"WRITE", "READ", "INV", "INVALIDATEALL", "RESPONSE"};
 
     
     for (int i = 0; i < 8; i++) {
-        processors.emplace_back(*stack, *workers, paths[i]);
-        processorsRead.emplace_back(*stackList->getListByPos(i)->getList(), *responseThreads, i);
+        processors.emplace_back(*stackList->getListByPos(i)->getList(), *readStack, *workers, paths[i], i);
     }
 
 
     for (int i = 0; i < 8; i++) {
-        processorsRead[i].processorThread(); 
+        processors[i].processorRead->processorThread(); 
     }
     for(int j = 0; j<10; j++){
         for (int i = 0; i < 8; i++) {
-            processors[i].sendOneInstruction(); 
+            processors[i].processorWrite->sendOneInstruction(); 
         }
     }
 
@@ -62,6 +58,7 @@ int main() {
     }
 
     //stack->showStack(); 
+    
 
     interconnectBus.join(); 
     

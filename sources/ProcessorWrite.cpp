@@ -1,11 +1,11 @@
-#include "Proccesor.h"
+#include "ProcessorWrite.h"
 #include <thread>
 #include <atomic>
 #include <vector>
 #include <chrono>
 
 
-Proccesor::Proccesor(InstructionList &stack, std::vector<std::thread>& workers, std::string& fileName) {
+ProcessorWrite::ProcessorWrite(InstructionList &stack, std::vector<std::thread>& workers, std::string& fileName) {
     this->stack = &stack;
     this->workers = &workers; 
     instrMem = new InstructionMemory(fileName); 
@@ -26,7 +26,7 @@ struct thread_context {
     bool committed {false};
 };
 
-void Proccesor::processorThreadFunction(std::string instr) {
+void ProcessorWrite::processorThreadFunction(std::string instr) {
     thread_context ctx;
 
     while (!ctx.committed) {
@@ -57,11 +57,11 @@ void Proccesor::processorThreadFunction(std::string instr) {
     }
 }
 
-void Proccesor::processorThread(std::string instr) {
-    workers->emplace_back(&Proccesor::processorThreadFunction, this, instr);
+void ProcessorWrite::processorThread(std::string instr) {
+    workers->emplace_back(&ProcessorWrite::processorThreadFunction, this, instr);
 }
 
-void Proccesor::sendOneInstruction(){
+void ProcessorWrite::sendOneInstruction(){
     if (instrMem->head != nullptr){
         std::string instr = instrMem->head->getInstr();
         instrMem->popInstr();
@@ -70,7 +70,7 @@ void Proccesor::sendOneInstruction(){
     }
 }
 
-std::string Proccesor::manipulateInstruction(std::string &instr){
+std::string ProcessorWrite::manipulateInstruction(std::string &instr){
     std::string writeInstr = instr.substr(0, 9); 
     std::string readInstr = instr.substr(0,8);
 

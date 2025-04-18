@@ -6,10 +6,10 @@
 #include "InstructionMemory.h"
 #include "CacheMemory.h"
 
-class Proccesor {
+class ProcessorWrite {
 public:
 
-    Proccesor(InstructionList &stack, std::vector<std::thread>& worker, std::string& fileName);
+    ProcessorWrite(InstructionList &stack, std::vector<std::thread>& worker, std::string& fileName);
     std::vector<std::thread>* worker;
     
     CacheMemory *cache; 
