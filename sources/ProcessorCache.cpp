@@ -42,6 +42,30 @@ void ProcessorCache::processorThreadFunction() {
                         readCacheStack->executeStackOperation(2, "NOINSTR"); 
                         if (strcmp(instr, "INVALIDATE RESPONSE") == 0) {
                             std:: cout << "EXECUTED I FROM P" << id << std::endl; 
+                            if(id == 0){
+                                processorWriteThread("ICK_ACK 0, 0");
+                            }
+                            else if(id == 1){
+                                processorWriteThread("ICK_ACK 1, 0");
+                            }
+                            else if(id == 2){
+                                processorWriteThread("ICK_ACK 2, 0");
+                            }
+                            else if(id == 3){
+                                processorWriteThread("ICK_ACK 3, 0");
+                            }  
+                            else if(id == 4){
+                                processorWriteThread("ICK_ACK 4, 0");
+                            }
+                            else if(id == 5){
+                                processorWriteThread("ICK_ACK 5, 0");
+                            }
+                            else if(id == 6){
+                                processorWriteThread("ICK_ACK 6, 0");
+                            }
+                            else if(id == 7){
+                                processorWriteThread("ICK_ACK 7, 0");
+                            }   
                         } 
                     }
                    ctx.current_state = state::RETRY;
