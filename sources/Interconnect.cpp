@@ -141,7 +141,24 @@ void Interconnect::receiveMessage( ){
                 writeCacheStack->executeStackOperation(2, "NOINSTR");
             }
 
-            std::cout << "All caches invalidated" << std::endl;
+            if (src == "0"){
+                stacks->getListByPos(0)->getList()->executeStackOperation(1, "INV_COMPLETE 0," + QoS);
+            }
+            else if (src == "1"){
+                stacks->getListByPos(1)->getList()->executeStackOperation(1, "INV_COMPLETE 1," + QoS);
+            }            else if (src == "2"){
+                stacks->getListByPos(2)->getList()->executeStackOperation(1, "INV_COMPLETE 2," + QoS);
+            }            else if (src == "3"){
+                stacks->getListByPos(3)->getList()->executeStackOperation(1, "INV_COMPLETE 3," + QoS);
+            }            else if (src == "4"){
+                stacks->getListByPos(4)->getList()->executeStackOperation(1, "INV_COMPLETE 4," + QoS);
+            }            else if (src == "5"){
+                stacks->getListByPos(5)->getList()->executeStackOperation(1, "INV_COMPLETE 5," + QoS);
+            }            else if (src == "6"){
+                stacks->getListByPos(6)->getList()->executeStackOperation(1, "INV_COMPLETE 6," + QoS);
+            }            else if (src == "7"){
+                stacks->getListByPos(7)->getList()->executeStackOperation(1, "INV_COMPLETE 7," + QoS);
+            }
         }
         
     }

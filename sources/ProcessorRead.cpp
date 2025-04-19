@@ -38,14 +38,16 @@ void ProcessorRead::processorThreadFunction() {
                 if (readStack->size.load() == ctx.start_size) {
                     if (strcmp(readStack->executeStackOperation(3, "NOINSTR"), "notnull") == 0) {
                         char* instr = readStack->executeStackOperation(4, "NOINSTR"); 
-                        readStack->executeStackOperation(2, "NOINSTR"); 
+                        std::string strInstr(instr);
+                        readStack->executeStackOperation(2, "NOINSTR");
                         if (strcmp(instr, "WRITE RESPONSE") == 0) {
                             std:: cout << "EXECUTED W FROM P" << id << std::endl; 
                         }
                         else if (strcmp(instr, "READ RESPONSE") == 0) {
                             std:: cout << "EXECUTED R FROM P" << id <<  std::endl; 
                         }  
-                        else if (strcmp(instr, "INVALIDATE RESPONSE") == 0) {
+                        else if (strInstr.substr(0, 12) == "INV_COMPLETE") {
+                            std::cout << "All caches invalidated" << std::endl;
                             std:: cout << "EXECUTED I FROM P" << id <<  std::endl; 
                         }                
                     }
