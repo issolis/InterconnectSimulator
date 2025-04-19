@@ -2,10 +2,11 @@
 #include <iostream>
 #include <cstring>
 
-Interconnect::Interconnect(InstructionList& stack,  List& stacks,  List& cacheReadList) {
+Interconnect::Interconnect(InstructionList& stack, InstructionList& writeCacheStack, List& stacks,  List& cacheReadList) {
     this->stack = &stack; 
     this->stacks = &stacks; 
     this->cacheReadList = &cacheReadList;
+    this->writeCacheStack = &writeCacheStack;
     startSnooping(); 
 }
 
@@ -126,26 +127,21 @@ void Interconnect::receiveMessage( ){
             std::string src       = strInstr.substr(21, comas[0]  - 21);
             std::string cacheLine   = strInstr.substr(comas[0] + 1, comas[1] - comas[0] - 1);
             std::string QoS       = strInstr.substr(comas[1] + 1);
-
-            if (src == "0"){
-                cacheReadList->getListByPos(0)->getList()->executeStackOperation(1, "INVALIDATE RESPONSE");
+ 
+            for (int i = 0; i < 8; i++){
+                cacheReadList->getListByPos(i)->getList()->executeStackOperation(1, "INVALIDATE RESPONSE");
             }
-            else if (src == "1"){
-                cacheReadList->getListByPos(1)->getList()->executeStackOperation(1, "INVALIDATE RESPONSE");
-            }            else if (src == "2"){
-                cacheReadList->getListByPos(2)->getList()->executeStackOperation(1, "INVALIDATE RESPONSE");
-            }            else if (src == "3"){
-                cacheReadList->getListByPos(3)->getList()->executeStackOperation(1, "INVALIDATE RESPONSE");
-            }            else if (src == "4"){
-                cacheReadList->getListByPos(4)->getList()->executeStackOperation(1, "INVALIDATE RESPONSE");
-            }            else if (src == "5"){
-                cacheReadList->getListByPos(5)->getList()->executeStackOperation(1, "INVALIDATE RESPONSE");
-            }            else if (src == "6"){
-                cacheReadList->getListByPos(6)->getList()->executeStackOperation(1, "INVALIDATE RESPONSE");
-            }            else if (src == "7"){
-                cacheReadList->getListByPos(7)->getList()->executeStackOperation(1, "INVALIDATE RESPONSE");
-            }  
-        
+            
+            while (writeCacheStack->size.load() != 8){
+                std::cout << "Waiting for all caches to invalidate" << std::endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));    
+            }
+
+            for(int i = 0; i < 8; i++){
+                writeCacheStack->executeStackOperation(2, "NOINSTR");
+            }
+
+            std::cout << "All caches invalidated" << std::endl;
         }
         
     }

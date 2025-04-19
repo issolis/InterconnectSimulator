@@ -41,7 +41,7 @@ void ProcessorCache::processorThreadFunction() {
                         char* instr = readCacheStack->executeStackOperation(4, "NOINSTR"); 
                         readCacheStack->executeStackOperation(2, "NOINSTR"); 
                         if (strcmp(instr, "INVALIDATE RESPONSE") == 0) {
-                            std:: cout << "EXECUTED I FROM P" << id << std::endl; 
+                           
                             if(id == 0){
                                 processorWriteThread("ICK_ACK 0, 0");
                             }
@@ -119,5 +119,8 @@ void ProcessorCache::processorWriteThreadFunction(std::string instr) {
 }
 
 void ProcessorCache::processorWriteThread(std::string instr) {
-    ([this, instr]() { this->processorWriteThreadFunction(instr); });
+    workers->emplace_back([this, instr]() {
+        this->processorWriteThreadFunction(instr);
+    });
 }
+
