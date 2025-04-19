@@ -1,8 +1,9 @@
 #include "ProcessorCache.h"
 #include <cstring>
 
-ProcessorCache::ProcessorCache(InstructionList &readCacheStack, std::vector<std::thread> &workers, int id){
+ProcessorCache::ProcessorCache(InstructionList &readCacheStack, InstructionList &writeCacheStack, std::vector<std::thread> &workers, int id){
     this->readCacheStack = &readCacheStack;
+    this->writeCacheStack = &writeCacheStack;
     this->workers = &workers;
     this->id = id;
 }
@@ -59,5 +60,40 @@ void ProcessorCache::processorThreadFunction() {
 }
 
 void ProcessorCache::processorThread() {
-    workers->emplace_back(&ProcessorCache::processorThreadFunction, this);
+    workers->emplace_back([this]() { this->processorThreadFunction(); });
+}
+
+void ProcessorCache::processorWriteThreadFunction(std::string instr) {
+    thread_context ctx;
+
+    while (!ctx.committed) {
+        switch (ctx.current_state) {
+            case state::READ:
+                ctx.start_size = writeCacheStack->size.load(std::memory_order_acquire);
+                ctx.current_state = state::EXECUTE;
+                break;
+            case state::EXECUTE:
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                ctx.current_state = state::VALIDATE;
+                break;
+            case state::VALIDATE:
+                if (writeCacheStack->size.load() == ctx.start_size) {
+                    writeCacheStack->executeStackOperation(1, instr);
+                    ctx.current_state = state::COMMIT;
+                } else {
+                    ctx.current_state = state::RETRY;
+                }
+                break;
+            case state::COMMIT:
+                ctx.committed = true;
+                break;
+            case state::RETRY:
+                ctx.current_state = state::READ;
+                break;
+        }
+    }
+}
+
+void ProcessorCache::processorWriteThread(std::string instr) {
+    ([this, instr]() { this->processorWriteThreadFunction(instr); });
 }
