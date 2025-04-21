@@ -40,11 +40,11 @@ void ProcessorRead::processorThreadFunction() {
                         char* instr = readStack->executeStackOperation(4, "NOINSTR"); 
                         std::string strInstr(instr);
                         readStack->executeStackOperation(2, "NOINSTR");
-                        if (strcmp(instr, "WRITE RESPONSE") == 0) {
-                            std:: cout << "EXECUTED W FROM P" << id << std::endl; 
+                        if (strInstr.substr(0,10) == "WRITE_RESP") {
+                            std:: cout << strInstr <<  "  --- FROM P" << id <<  std::endl; 
                         }
-                        else if (strcmp(instr, "READ RESPONSE") == 0) {
-                            std:: cout << "EXECUTED R FROM P" << id <<  std::endl; 
+                        else if (strInstr.substr(0,9) == "READ_RESP") {
+                            std:: cout << strInstr <<  "  --- FROM P" << id <<  std::endl; 
                         }  
                         else if (strInstr.substr(0, 12) == "INV_COMPLETE") {
                             std::cout << "All caches invalidated" << std::endl;

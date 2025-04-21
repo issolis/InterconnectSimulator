@@ -7,6 +7,7 @@ Interconnect::Interconnect(InstructionList& stack, InstructionList& writeCacheSt
     this->stacks = &stacks; 
     this->cacheReadList = &cacheReadList;
     this->writeCacheStack = &writeCacheStack;
+    this->sharedMemory = new SharedMemory();
     startSnooping(); 
 }
 
@@ -50,31 +51,20 @@ void Interconnect::receiveMessage( ){
             std::string data      = strInstr.substr(comas[1] + 1, comas[2] - comas[1] - 1);
             std::string QoS       = strInstr.substr(comas[2] + 1);
 
-            
-            if (src == "0"){
-                stacks->getListByPos(0)->getList()->executeStackOperation(1, "WRITE RESPONSE");
+
+
+            std::cout << "Data written to address " << address << ": " << data << std::endl;
+            sharedMemory->setSharedMemory(address, data);
+
+            std::string dataResp = "WRITE_RESP " + src + ", 0x1" + ", " + QoS;
+
+            for (int i = 0; i < 8; i++){
+                if (src == std::to_string(i)){
+                    stacks->getListByPos(i)->getList()->executeStackOperation(1, dataResp); 
+                    break;
+                }
             }
-            else if (src == "1"){
-                stacks->getListByPos(1)->getList()->executeStackOperation(1, "WRITE RESPONSE");
-            }
-            else if (src == "2"){
-                stacks->getListByPos(2)->getList()->executeStackOperation(1, "WRITE RESPONSE");
-            }
-            else if (src == "3"){
-                stacks->getListByPos(3)->getList()->executeStackOperation(1, "WRITE RESPONSE");
-            }
-            else if (src == "4"){
-                stacks->getListByPos(4)->getList()->executeStackOperation(1, "WRITE RESPONSE");
-            }
-            else if (src == "5"){
-                stacks->getListByPos(5)->getList()->executeStackOperation(1, "WRITE RESPONSE");
-            }
-            else if (src == "6"){
-                stacks->getListByPos(6)->getList()->executeStackOperation(1, "WRITE RESPONSE");
-            }
-            else if (src == "7"){
-                stacks->getListByPos(7)->getList()->executeStackOperation(1, "WRITE RESPONSE");
-            }
+
             std::this_thread::sleep_for(std::chrono::milliseconds(300));
             
         }
@@ -94,24 +84,20 @@ void Interconnect::receiveMessage( ){
             std::string size      = strInstr.substr(comas[1] + 1, comas[2] - comas[1] - 1);
             std::string QoS       = strInstr.substr(comas[2] + 1);
 
-            if (src == "0"){
-                stacks->getListByPos(0)->getList()->executeStackOperation(1, "READ RESPONSE");
+            std::string data = sharedMemory->getSharedMemory(address, size);
+            std::cout << "Data read from address " << address << ": " << data << std::endl;
+            std::string dataResp = "READ_RESP " + src +  ", " + data + ", " + QoS;
+
+            for (int i = 0; i < 8; i++){
+                if (src == std::to_string(i)){
+                    stacks->getListByPos(i)->getList()->executeStackOperation(1,  dataResp); 
+                    break;
+                }
             }
-            else if (src == "1"){
-                stacks->getListByPos(1)->getList()->executeStackOperation(1, "READ RESPONSE");
-            }            else if (src == "2"){
-                stacks->getListByPos(2)->getList()->executeStackOperation(1, "READ RESPONSE");
-            }            else if (src == "3"){
-                stacks->getListByPos(3)->getList()->executeStackOperation(1, "READ RESPONSE");
-            }            else if (src == "4"){
-                stacks->getListByPos(4)->getList()->executeStackOperation(1, "READ RESPONSE");
-            }            else if (src == "5"){
-                stacks->getListByPos(5)->getList()->executeStackOperation(1, "READ RESPONSE");
-            }            else if (src == "6"){
-                stacks->getListByPos(6)->getList()->executeStackOperation(1, "READ RESPONSE");
-            }            else if (src == "7"){
-                stacks->getListByPos(7)->getList()->executeStackOperation(1, "READ RESPONSE");
-            }        
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+                
         }
         else if (broadcastInv == "BROADCAST_INVALIDATE"){
             int comas[3] = {-1, -1};

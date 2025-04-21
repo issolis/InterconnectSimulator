@@ -8,10 +8,12 @@
 #include "InstructionMemory.h"
 #include "List.h"
 #include "Processor.h"
+#include "SharedMemory.h"
 
 
 
 int main() {
+    
     std::cout<< std::endl << std::endl << std::endl << std::endl << std::endl;
     std::cout<< "PROGRAM EXECUTION" << std::endl << std::endl << std::endl << std::endl << std::endl;
     
@@ -68,6 +70,9 @@ int main() {
     
 
     interconnectBus.join(); 
+    
+
+
     
     
     return 0; 
