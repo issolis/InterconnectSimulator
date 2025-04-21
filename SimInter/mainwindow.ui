@@ -26,6 +26,9 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="toolTipDuration">
+    <number>8</number>
+   </property>
    <widget class="QWidget" name="loadMemoryWidget" native="true">
     <property name="geometry">
      <rect>

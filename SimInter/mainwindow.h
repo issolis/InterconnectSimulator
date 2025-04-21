@@ -22,6 +22,7 @@ private slots:
     void onActionSavePETriggered();
     void onActionSaveAllPEsTriggered();
     void onActionCargarMemoriasTriggered();
+    bool saveFile(int peNum);
 
 private:
     Ui::MainWindow *ui;
@@ -29,5 +30,6 @@ private:
     QTextEdit * PETextEdits[8];
     QString path;
     void cargarArchivosMemoria(QString path);
+    int openDialog(QString title, QString text, int type);
 };
 #endif // MAINWINDOW_H
