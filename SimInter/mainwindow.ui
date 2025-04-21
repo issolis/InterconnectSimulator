@@ -63,7 +63,7 @@
     <property name="title">
      <string>Opciones</string>
     </property>
-    <addaction name="actionOpciones"/>
+    <addaction name="actionCargarMemorias"/>
    </widget>
    <addaction name="menuCargar_Memoria"/>
   </widget>
@@ -88,7 +88,7 @@
    <addaction name="actionStep"/>
    <addaction name="actionFinish"/>
    <addaction name="separator"/>
-   <addaction name="actionAddPE"/>
+   <addaction name="actionSaveAllPEs"/>
    <addaction name="actionSavePE"/>
   </widget>
   <action name="actionStep">
@@ -157,20 +157,9 @@
     <enum>QAction::NoRole</enum>
    </property>
   </action>
-  <action name="actionOpciones">
+  <action name="actionCargarMemorias">
    <property name="text">
     <string>Cargar memoria...</string>
-   </property>
-  </action>
-  <action name="actionAddPE">
-   <property name="icon">
-    <iconset theme="list-add"/>
-   </property>
-   <property name="text">
-    <string>AddPE</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
    </property>
   </action>
   <action name="actionSavePE">
@@ -179,6 +168,17 @@
    </property>
    <property name="text">
     <string>SavePE</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionSaveAllPEs">
+   <property name="icon">
+    <iconset theme="edit-copy"/>
+   </property>
+   <property name="text">
+    <string>SaveAllPEs</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
