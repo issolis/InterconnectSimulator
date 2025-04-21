@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTextEdit>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,5 +20,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QWidget * PETabs [8];
+    QTextEdit * PETextEdits[8];
 };
 #endif // MAINWINDOW_H

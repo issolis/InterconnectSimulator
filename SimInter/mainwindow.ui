@@ -10,10 +10,46 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="loadMemoryWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>801</width>
+      <height>541</height>
+     </rect>
+    </property>
+    <widget class="QTabWidget" name="PEMemoriesTW">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>801</width>
+       <height>521</height>
+      </rect>
+     </property>
+     <property name="currentIndex">
+      <number>-1</number>
+     </property>
+    </widget>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -25,9 +61,9 @@
    </property>
    <widget class="QMenu" name="menuCargar_Memoria">
     <property name="title">
-     <string>Cargar Memoria...</string>
+     <string>Opciones</string>
     </property>
-    <addaction name="actionFinish"/>
+    <addaction name="actionOpciones"/>
    </widget>
    <addaction name="menuCargar_Memoria"/>
   </widget>
@@ -43,14 +79,17 @@
     <bool>false</bool>
    </attribute>
    <addaction name="separator"/>
-   <addaction name="actionStep"/>
-   <addaction name="actionFinish"/>
-   <addaction name="separator"/>
    <addaction name="actionPlay"/>
    <addaction name="actionPause"/>
    <addaction name="actionStop"/>
    <addaction name="separator"/>
    <addaction name="actionRestart"/>
+   <addaction name="separator"/>
+   <addaction name="actionStep"/>
+   <addaction name="actionFinish"/>
+   <addaction name="separator"/>
+   <addaction name="actionAddPE"/>
+   <addaction name="actionSavePE"/>
   </widget>
   <action name="actionStep">
    <property name="icon">
@@ -58,17 +97,6 @@
    </property>
    <property name="text">
     <string>Step</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
-   </property>
-  </action>
-  <action name="actionFinish">
-   <property name="icon">
-    <iconset theme="media-skip-forward"/>
-   </property>
-   <property name="text">
-    <string>Finish</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
@@ -113,6 +141,44 @@
    </property>
    <property name="text">
     <string>Pause</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionFinish">
+   <property name="icon">
+    <iconset theme="media-skip-forward"/>
+   </property>
+   <property name="text">
+    <string>Finish</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionOpciones">
+   <property name="text">
+    <string>Cargar memoria...</string>
+   </property>
+  </action>
+  <action name="actionAddPE">
+   <property name="icon">
+    <iconset theme="list-add"/>
+   </property>
+   <property name="text">
+    <string>AddPE</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionSavePE">
+   <property name="icon">
+    <iconset theme="media-floppy"/>
+   </property>
+   <property name="text">
+    <string>SavePE</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
