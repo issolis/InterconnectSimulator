@@ -48,7 +48,7 @@ void ProcessorRead::processorThreadFunction() {
                         }  
                         else if (strInstr.substr(0, 12) == "INV_COMPLETE") {
                             std::cout << "All caches invalidated" << std::endl;
-                            std:: cout << "EXECUTED I FROM P" << id <<  std::endl; 
+                            std:: cout << strInstr << " --- FROM P" << id <<  std::endl; 
                         }                
                     }
                    ctx.current_state = state::RETRY;
