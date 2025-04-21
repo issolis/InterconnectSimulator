@@ -16,11 +16,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-
-
+    //Set up para el espacio de escritura de memoria
 
     for(int i = 0; i < 8; i++){
-        this->PETabs[i] = new QWidget(ui->loadMemoryWidget);
+        this->PETabs[i] = new QWidget(ui->pageLoad);
         ui->PEMemoriesTW->addTab(this->PETabs[i], QString("PE ").append(std::to_string(i + 1)));
         this->PETextEdits[i] = new QTextEdit();
         QVBoxLayout *layout = new QVBoxLayout(this->PETabs[i]);
@@ -31,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSavePE, &QAction::triggered, this, &MainWindow::onActionSavePETriggered);
     connect(ui->actionSaveAllPEs, &QAction::triggered, this, &MainWindow::onActionSaveAllPEsTriggered);
     connect(ui->actionCargarMemorias, &QAction::triggered, this, &MainWindow::onActionCargarMemoriasTriggered);
+
+    //Set up del espacio de display para los bloques de memoria
 }
 
 MainWindow::~MainWindow()
@@ -63,7 +64,7 @@ void MainWindow::onActionSavePETriggered()
 {
     int tab = this->ui->PEMemoriesTW->currentIndex();
     if(saveFile(tab)){
-        openDialog(QString("Guardado"), QString("La información se guardó exitosamente"), 1);
+        openDialog(QString("Guardado"), QString("La información se guardó exitosamente"), 0);
     }else{
         openDialog(QString("Error"), QString("No se pudo guardar el archivo correctamente"), 1);
     }
