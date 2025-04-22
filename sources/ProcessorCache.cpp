@@ -117,6 +117,7 @@ void ProcessorCache::processorWriteThreadFunction(std::string instr) {
                 break;
             case state::VALIDATE:
                 if (writeCacheStack->size.load() == ctx.start_size) {
+                    std::cout << instr << " --- FROM P"<< id << std::endl; 
                     writeCacheStack->executeStackOperation(1, instr);
                     ctx.current_state = state::COMMIT;
                 } else {
