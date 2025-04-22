@@ -8,7 +8,7 @@
 #include <QIcon>
 #include <QStyleFactory>
 #include <fstream>
-
+#include <sstream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -33,10 +33,48 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Set up del espacio de display para los bloques de memoria
 
+    ui->PEComboBox->addItem(QString("Compartida"));
+    for(int i = 0; i < 8; i++){
+        ui->PEComboBox->addItem(QString("PE ").append(std::to_string(i + 1)));
+    }
+
+    ui->PEComboBox->setCurrentIndex(0);
+
+    for(int i = 0; i < 128; i++){
+        ui->MemoryStateTable->insertRow(i);
+        ui->SharedMemStateTable->insertRow(i);
+        //qDebug() << this->int_to_hex(i);
+        QString hexValue = QString("0x").append(this->int_to_hex(i));
+        this->addItemToTable(ui->MemoryStateTable, hexValue, i, 0);
+        this->addItemToTable(ui->MemoryStateTable, QString("Enabled"), i, 1);
+        this->addItemToTable(ui->SharedMemStateTable, hexValue, i, 0);
+        this->addItemToTable(ui->SharedMemStateTable, QString("Enabled"), i, 1);
+    }
+
+    for(int i = 128; i < 4096; i++){
+        ui->SharedMemStateTable->insertRow(i);
+        QString hexValue = QString("0x").append(this->int_to_hex(i));
+        this->addItemToTable(ui->SharedMemStateTable, hexValue, i, 0);
+        this->addItemToTable(ui->SharedMemStateTable, QString("Enabled"), i, 1);
+    }
+
+    this->changeTable();
+
     //Set up del principal
 
     connect(ui->actionNextView, &QAction::triggered, this, &MainWindow::onActionNextViewTriggered);
     connect(ui->actionPreviousView, &QAction::triggered, this, &MainWindow::onActionPreviousViewTriggered);
+}
+
+std::string MainWindow::int_to_hex(int decimal) {
+    std::stringstream ss;
+    ss << std::hex << std::uppercase << decimal;
+    return ss.str();
+}
+void MainWindow::addItemToTable(QTableWidget * table ,QString text, int row, int column){
+    QTableWidgetItem * item = new QTableWidgetItem();
+    item->setText(text);
+    table->setItem(row,column, item);
 }
 
 MainWindow::~MainWindow()
@@ -46,6 +84,18 @@ MainWindow::~MainWindow()
         delete PETabs[i];
         delete PETextEdits[i];
     }
+}
+
+void MainWindow::changeTable(){
+    int memoryBlocks;
+
+    if(ui->PEComboBox->currentIndex() == 0){
+        memoryBlocks = 4096;
+    }else{
+        memoryBlocks = 128;
+    }
+
+
 }
 
 void MainWindow::onActionPreviousViewTriggered(){

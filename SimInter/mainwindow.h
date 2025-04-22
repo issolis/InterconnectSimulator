@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTextEdit>
+#include <QTableWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -36,5 +37,8 @@ private:
     int current_page = 1;
     void showCurrentPage();
     bool saveFile(int peNum);
+    void changeTable();
+    std::string int_to_hex(int decimal);
+    void addItemToTable(QTableWidget * table ,QString text, int row, int column);
 };
 #endif // MAINWINDOW_H
