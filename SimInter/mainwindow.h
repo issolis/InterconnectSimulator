@@ -22,7 +22,9 @@ private slots:
     void onActionSavePETriggered();
     void onActionSaveAllPEsTriggered();
     void onActionCargarMemoriasTriggered();
-    bool saveFile(int peNum);
+    void onActionPreviousViewTriggered();
+    void onActionNextViewTriggered();
+
 
 private:
     Ui::MainWindow *ui;
@@ -31,5 +33,8 @@ private:
     QString path;
     void cargarArchivosMemoria(QString path);
     int openDialog(QString title, QString text, int type);
+    int current_page = 1;
+    void showCurrentPage();
+    bool saveFile(int peNum);
 };
 #endif // MAINWINDOW_H

@@ -32,6 +32,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionCargarMemorias, &QAction::triggered, this, &MainWindow::onActionCargarMemoriasTriggered);
 
     //Set up del espacio de display para los bloques de memoria
+
+    //Set up del principal
+
+    connect(ui->actionNextView, &QAction::triggered, this, &MainWindow::onActionNextViewTriggered);
+    connect(ui->actionPreviousView, &QAction::triggered, this, &MainWindow::onActionPreviousViewTriggered);
 }
 
 MainWindow::~MainWindow()
@@ -41,6 +46,27 @@ MainWindow::~MainWindow()
         delete PETabs[i];
         delete PETextEdits[i];
     }
+}
+
+void MainWindow::onActionPreviousViewTriggered(){
+    this->current_page -=1;
+    if(this->current_page < 0){
+        this->current_page = ui->stackedWidget->count() - 1;
+    }
+    showCurrentPage();
+}
+
+
+void MainWindow::onActionNextViewTriggered(){
+    this->current_page += 1;
+    if(this->current_page == ui->stackedWidget->count()){
+        this->current_page = 0;
+    }
+    showCurrentPage();
+}
+
+void MainWindow::showCurrentPage(){
+    ui->stackedWidget->setCurrentIndex(this->current_page);
 }
 
 bool MainWindow::saveFile(int peNum){

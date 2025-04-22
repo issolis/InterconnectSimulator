@@ -38,6 +38,9 @@
       <height>541</height>
      </rect>
     </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
     <widget class="QWidget" name="pageLoad">
      <widget class="QTabWidget" name="PEMemoriesTW">
       <property name="geometry">
@@ -53,7 +56,18 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="pageMemoryBlocks"/>
+    <widget class="QWidget" name="pageMemoryBlocks">
+     <widget class="QComboBox" name="PEComboBox">
+      <property name="geometry">
+       <rect>
+        <x>630</x>
+        <y>30</y>
+        <width>161</width>
+        <height>25</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -266,7 +280,7 @@
     <iconset theme="go-next"/>
    </property>
    <property name="text">
-    <string>NextView</string>
+    <string>Vista Siguiente</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Right</string>
@@ -280,7 +294,7 @@
     <iconset theme="go-previous"/>
    </property>
    <property name="text">
-    <string>PreviousView</string>
+    <string>Vista Anterior</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Left</string>
