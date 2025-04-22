@@ -5,11 +5,11 @@
 #include <chrono>
 
 
-ProcessorWrite::ProcessorWrite(InstructionList &stack, std::vector<std::thread>& workers, std::string& fileName) {
+ProcessorWrite::ProcessorWrite(InstructionList &stack, std::vector<std::thread>& workers, CacheMemory &cacheMemory, std::string& fileName) {
     this->stack = &stack;
     this->workers = &workers; 
     instrMem = new InstructionMemory(fileName); 
-    cache = new CacheMemory(); 
+    this->cacheMemory = &cacheMemory; 
 }
 
 enum class state {
@@ -94,7 +94,7 @@ std::string ProcessorWrite::manipulateInstruction(std::string &instr){
         
         int lines = std::stoi(numLines);
         int start = std::stoi(startLine);
-        std::string data = cache->getData(lines, start);
+        std::string data = cacheMemory->getData(lines, start);
         std::string newInstr = "WRITE_MEM " + src + "," + address + "," + data + "," + QoS;
 
         return newInstr; 

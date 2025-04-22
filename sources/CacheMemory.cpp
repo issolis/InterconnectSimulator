@@ -4,7 +4,7 @@
 
 CacheMemory::CacheMemory(){
     for (int i = 0; i < 128; i++){
-        cacheState[i] = "Validate";
+        cacheState[i] = "VALID";
         std::random_device rd;                     
         std::mt19937 gen(rd());                     
         std::uniform_int_distribution<> distrib(1, 65535);
@@ -31,6 +31,10 @@ void CacheMemory::showMem() {
         std::cout << cache[i + 3]     << " : " << cacheState[i + 3] << "    ";
         std::cout << std::endl;
     }
+}
+
+std::string CacheMemory::getCacheState(int address){
+     return cacheState[address];  
 }
 
 std::string CacheMemory::getData(int numLines, int startLine)

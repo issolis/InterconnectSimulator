@@ -1,10 +1,11 @@
 #include "ProcessorCache.h"
 #include <cstring>
 
-ProcessorCache::ProcessorCache(InstructionList &readCacheStack, InstructionList &writeCacheStack, std::vector<std::thread> &workers, int id){
+ProcessorCache::ProcessorCache(InstructionList &readCacheStack, InstructionList &writeCacheStack, std::vector<std::thread> &workers,  CacheMemory &cacheMemory, int id){
     this->readCacheStack = &readCacheStack;
     this->writeCacheStack = &writeCacheStack;
     this->workers = &workers;
+    this->cacheMemory = &cacheMemory;
     this->id = id;
 }
 
@@ -40,8 +41,22 @@ void ProcessorCache::processorThreadFunction() {
                     if (strcmp(readCacheStack->executeStackOperation(3, "NOINSTR"), "notnull") == 0) {
                         char* instr = readCacheStack->executeStackOperation(4, "NOINSTR"); 
                         readCacheStack->executeStackOperation(2, "NOINSTR"); 
-                        if (strcmp(instr, "INVALIDATE RESPONSE") == 0) {
-                           
+                        std::string strInstr(instr);
+                        if (strInstr.substr(0, 10) == "INVALIDATE"){
+                            std::string cacheLine = strInstr.substr(11);
+                            
+
+                            int address = 0; 
+                            for (int i = 0; i < 128; i++){
+                                if (cacheLine == std::to_string(i)){
+                                    address = i;
+                                    cacheMemory->changeMemState(i, "INVALID");
+                                    break;
+                                }
+                            }
+
+                            
+                          
                             if(id == 0){
                                 processorWriteThread("ICK_ACK 0, 0");
                             }

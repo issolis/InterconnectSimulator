@@ -30,23 +30,23 @@ int main() {
         "InstructionsFile/InstructionsP8.txt"};
 
 
-    List *stackList = new List(); 
-    List *readCacheStack = new List();
+    List *readStackList = new List(); 
+    List *readCacheStackList = new List();
 
 
     for (int i = 0; i < 8; i++){
-        stackList->insertList(i); 
-        readCacheStack->insertList(i);
+        readStackList->insertList(i); 
+        readCacheStackList->insertList(i);
     }
 
-    Interconnect interconnectBus = Interconnect(*writeStack, *writeCacheStack, *stackList, *readCacheStack);
+    Interconnect interconnectBus = Interconnect(*writeStack, *writeCacheStack, *readStackList, *readCacheStackList);
 
     
     std::string stringList[5] = {"WRITE", "READ", "INV", "INVALIDATEALL", "RESPONSE"};
 
     
     for (int i = 0; i < 8; i++) {
-        processors.emplace_back(*stackList->getListByPos(i)->getList(), *writeStack, *readCacheStack->getListByPos(i)->getList(), *writeCacheStack, *workers, paths[i], i);
+        processors.emplace_back(*readStackList->getListByPos(i)->getList(), *writeStack, *readCacheStackList->getListByPos(i)->getList(), *writeCacheStack, *workers, paths[i], i);
     }
 
 
@@ -54,7 +54,7 @@ int main() {
         processors[i].processorRead->processorThread(); 
         processors[i].processorCache->processorThread();
     }
-    for(int j = 0; j<10; j++){
+    for(int j = 0; j<1; j++){
         for (int i = 0; i < 8; i++) {
             processors[i].processorWrite->sendOneInstruction(); 
          

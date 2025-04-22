@@ -22,7 +22,7 @@ public:
     
     InstructionList* stack; 
     InstructionList* writeCacheStack;
-    List* stacks;
+    List* readStackList;
     List* cacheReadList;
     SharedMemory* sharedMemory;
 

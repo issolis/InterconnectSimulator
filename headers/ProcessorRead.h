@@ -5,6 +5,7 @@
 #include <string>
 #include <thread>
 #include "InstructionList.h"
+#include "CacheMemory.h"
 
 class ProcessorRead {
 public:

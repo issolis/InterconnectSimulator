@@ -11,7 +11,7 @@ class ProcessorCache
 {
 
 public:
-    ProcessorCache(InstructionList &readCacheStack, InstructionList &writeCacheStack,  std::vector<std::thread> &worker, int id);
+    ProcessorCache(InstructionList &readCacheStack, InstructionList &writeCacheStack,  std::vector<std::thread> &worker,  CacheMemory &cacheMemory, int id);
     
     std::vector<std::thread>* workers;
     InstructionList *readCacheStack; 

@@ -2,9 +2,9 @@
 #include <iostream>
 #include <cstring>
 
-Interconnect::Interconnect(InstructionList& stack, InstructionList& writeCacheStack, List& stacks,  List& cacheReadList) {
+Interconnect::Interconnect(InstructionList& stack, InstructionList& writeCacheStack, List& readStackList,  List& cacheReadList) {
     this->stack = &stack; 
-    this->stacks = &stacks; 
+    this->readStackList = &readStackList; 
     this->cacheReadList = &cacheReadList;
     this->writeCacheStack = &writeCacheStack;
     this->sharedMemory = new SharedMemory();
@@ -60,12 +60,12 @@ void Interconnect::receiveMessage( ){
 
             for (int i = 0; i < 8; i++){
                 if (src == std::to_string(i)){
-                    stacks->getListByPos(i)->getList()->executeStackOperation(1, dataResp); 
+                    readStackList->getListByPos(i)->getList()->executeStackOperation(1, dataResp); 
                     break;
                 }
             }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+           // std::this_thread::sleep_for(std::chrono::milliseconds(300));
             
         }
         else if(readInstr == "READ_MEM"){
@@ -90,12 +90,12 @@ void Interconnect::receiveMessage( ){
 
             for (int i = 0; i < 8; i++){
                 if (src == std::to_string(i)){
-                    stacks->getListByPos(i)->getList()->executeStackOperation(1,  dataResp); 
+                    readStackList->getListByPos(i)->getList()->executeStackOperation(1,  dataResp); 
                     break;
                 }
             }
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+           // std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
                 
         }
@@ -115,7 +115,7 @@ void Interconnect::receiveMessage( ){
             std::string QoS       = strInstr.substr(comas[1] + 1);
  
             for (int i = 0; i < 8; i++){
-                cacheReadList->getListByPos(i)->getList()->executeStackOperation(1, "INVALIDATE RESPONSE");
+                cacheReadList->getListByPos(i)->getList()->executeStackOperation(1, "INVALIDATE " + cacheLine);
             }
             
             while (writeCacheStack->size.load() != 8){
@@ -130,7 +130,7 @@ void Interconnect::receiveMessage( ){
 
             for (int i = 0; i < 8; i++){
                 if (src == std::to_string(i)){
-                    stacks->getListByPos(i)->getList()->executeStackOperation(1, "INV_COMPLETE " + src + ", " + QoS);
+                    readStackList->getListByPos(i)->getList()->executeStackOperation(1, "INV_COMPLETE " + src + ", " + QoS);
                     break;
                 }
             }
