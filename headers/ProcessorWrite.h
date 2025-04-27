@@ -9,11 +9,11 @@
 class ProcessorWrite {
 public:
 
-    ProcessorWrite(InstructionList &stack, std::vector<std::thread>& worker, CacheMemory &cacheMemory, std::string& fileName, int id);
+    ProcessorWrite(InstructionList &stack, std::vector<std::thread>& worker, CacheMemory &cacheMemory, std::string& fileName, int id, InstructionList &requestStack);
     std::vector<std::thread>* worker;
     int id; 
     CacheMemory *cacheMemory; 
-
+    InstructionList *requestStack;
     InstructionMemory *instrMem; 
 
     void processorThreadFunction(std::string instr);
@@ -21,7 +21,10 @@ public:
     void sendOneInstruction();
 
 
-    std::string manipulateInstruction(std::string &str); 
+    std::string manipulateInstruction(std::string &str);
+    void processorRequestThreadFunction(std::string instr);
+
+    void processorRequestThread(std::string instr);
 
     InstructionList* stack;
     std::vector<std::thread>* workers;

@@ -1,77 +1,21 @@
 #include <iostream>
-#include <thread>
-#include <atomic>
 #include <vector>
-#include <chrono>
-#include "InstructionList.h"
-#include "Interconnect.h"
-#include "InstructionMemory.h"
-#include "List.h"
-#include "Processor.h"
-#include "SharedMemory.h"
+#include "ProcessorController.h"
 
 
 
 int main() {
     
-    std::cout<< std::endl << std::endl << std::endl << std::endl << std::endl;
-    std::cout<< "PROGRAM EXECUTION" << std::endl << std::endl << std::endl << std::endl << std::endl;
+    std::cout<< " \n\n\n\nPROGRAM EXECUTION \n\n\n\n" << std::endl;
     
     std::vector<std::thread>* workers = new std::vector<std::thread>();
-    InstructionList *writeStack = new InstructionList (); 
-    InstructionList *writeCacheStack = new InstructionList();  
+
+    ProcessorController *controller = new ProcessorController(*workers);
    
-    std::vector<ProcessorWrite> processorsWrite; 
-    std::vector<ProcessorRead> processorsRead; 
-    std::vector<Processor> processors;
-    std::vector<InstructionList> readStacks; 
-    std::string paths[8] = {"InstructionsFile/InstructionsP1.txt", "InstructionsFile/InstructionsP2.txt", "InstructionsFile/InstructionsP3.txt",
-        "InstructionsFile/InstructionsP4.txt", "InstructionsFile/InstructionsP5.txt", "InstructionsFile/InstructionsP6.txt", "InstructionsFile/InstructionsP7.txt",
-        "InstructionsFile/InstructionsP8.txt"};
-
-
-    List *readStackList = new List(); 
-    List *readCacheStackList = new List();
-
-
-    for (int i = 0; i < 8; i++){
-        readStackList->insertList(i); 
-        readCacheStackList->insertList(i);
-    }
-
-    Interconnect interconnectBus = Interconnect(*writeStack, *writeCacheStack, *readStackList, *readCacheStackList);
-
-    
-    std::string stringList[5] = {"WRITE", "READ", "INV", "INVALIDATEALL", "RESPONSE"};
-
-    
-    for (int i = 0; i < 8; i++) {
-        processors.emplace_back(*readStackList->getListByPos(i)->getList(), *writeStack, *readCacheStackList->getListByPos(i)->getList(), *writeCacheStack, *workers, paths[i], i);
-    }
-
-
-    for (int i = 0; i < 8; i++) {
-        processors[i].processorRead->processorThread(); 
-        processors[i].processorCache->processorThread();
-    }
-    for(int j = 0; j<1; j++){
-        for (int i = 0; i < 1; i++) {
-            processors[i].processorWrite->sendOneInstruction(); 
-         
-        }
-    }
-
-
     for (auto& t : *workers) {
         t.join();
     }
-
-    //stack->showStack(); 
-    
-
-    interconnectBus.join(); 
-    
-    
+   
     return 0; 
 
 }
