@@ -17,7 +17,7 @@ ProcessorController::ProcessorController(std::vector<std::thread> &workers) {
         readCacheStackList->insertList(i);
     }
 
-    interconnectBus = new Interconnect(*writeStack, *writeCacheStack, *readStackList, *readCacheStackList);
+    interconnectBus = new Interconnect(*writeStack, *writeCacheStack, *readStackList, *readCacheStackList, *responsesStack);
     
     for (int i = 0; i < 8; i++) {
         processors.emplace_back(

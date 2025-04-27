@@ -18,10 +18,11 @@ private:
 
 public:
 
-    Interconnect(InstructionList& stack, InstructionList& cacheWriteStack, List& stacks, List& cacheReadList);
+    Interconnect(InstructionList& stack, InstructionList& cacheWriteStack, List& stacks, List& cacheReadList, InstructionList& responseStack);
     
     InstructionList* stack; 
     InstructionList* writeCacheStack;
+    InstructionList* responseStack;
     List* readStackList;
     List* cacheReadList;
     SharedMemory* sharedMemory;

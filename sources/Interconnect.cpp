@@ -2,12 +2,13 @@
 #include <iostream>
 #include <cstring>
 
-Interconnect::Interconnect(InstructionList& stack, InstructionList& writeCacheStack, List& readStackList,  List& cacheReadList) {
+Interconnect::Interconnect(InstructionList& stack, InstructionList& writeCacheStack, List& readStackList,  List& cacheReadList, InstructionList& responseStack) {
     this->stack = &stack; 
     this->readStackList = &readStackList; 
     this->cacheReadList = &cacheReadList;
     this->writeCacheStack = &writeCacheStack;
     this->sharedMemory = new SharedMemory();
+    this->responseStack = &responseStack;
     startSnooping(); 
 }
 
@@ -150,7 +151,7 @@ void Interconnect::startSnooping() {
     monitor = std::thread([this]() {
         while (running) {
             receiveMessage(); 
-            //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     });
 }
