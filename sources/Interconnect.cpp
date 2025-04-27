@@ -27,6 +27,7 @@ struct thread_context {
 };
 
 void Interconnect::receiveMessage( ){ 
+    std::lock_guard<std::mutex> stack_lock(stack_mutex);
     if (strcmp(stack->executeStackOperation(3, "NOINSTR"), "notnull") == 0) {
         char* instr = stack->executeStackOperation(4, "NOINSTR"); 
         stack->executeStackOperation(2, "NOINSTR"); 
@@ -61,6 +62,7 @@ void Interconnect::receiveMessage( ){
 
             for (int i = 0; i < 8; i++){
                 if (src == std::to_string(i)){
+                    responseStack->executeStackOperation(1, dataResp);
                     readStackList->getListByPos(i)->getList()->executeStackOperation(1, dataResp); 
                     break;
                 }
@@ -91,6 +93,7 @@ void Interconnect::receiveMessage( ){
 
             for (int i = 0; i < 8; i++){
                 if (src == std::to_string(i)){
+                    responseStack->executeStackOperation(1, dataResp);
                     readStackList->getListByPos(i)->getList()->executeStackOperation(1,  dataResp); 
                     break;
                 }
@@ -133,12 +136,15 @@ void Interconnect::receiveMessage( ){
 
             for (int i = 0; i < 8; i++){
                 if (src == std::to_string(i)){
+                    responseStack->executeStackOperation(1, "INV_RESP " + src + ", " + cacheLine + ", " + QoS);
                     readStackList->getListByPos(i)->getList()->executeStackOperation(1, "INV_COMPLETE " + src + ", " + QoS);
                     break;
                 }
             }
             
         }
+
+      
         
     }
 }
@@ -151,7 +157,7 @@ void Interconnect::startSnooping() {
     monitor = std::thread([this]() {
         while (running) {
             receiveMessage(); 
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     });
 }
@@ -159,6 +165,3 @@ void Interconnect::startSnooping() {
 void Interconnect::join(){
     monitor.join(); 
 }
-
-
-

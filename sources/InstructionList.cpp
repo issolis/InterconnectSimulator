@@ -63,13 +63,13 @@ void InstructionList::popInstr()
 }
 
 void InstructionList::showStack(){
-    std::cout << "------Stack------" << std::endl;
+    //std::cout << "------Stack------" << std::endl;
     Instruction *currentInstr = head; 
     while (currentInstr != nullptr){
         std::cout << currentInstr->getInstr() << std::endl;
         currentInstr = currentInstr->getNextInstr(); 
     }
-    std::cout<<size<<std::endl; 
+   // std::cout<<size<<std::endl; 
 }
 
 InstructionList* InstructionList::copy() {

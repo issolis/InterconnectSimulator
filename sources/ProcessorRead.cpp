@@ -40,7 +40,7 @@ void ProcessorRead::processorThreadFunction() {
                         char* instr = readStack->executeStackOperation(4, "NOINSTR"); 
                         std::string strInstr(instr);
                         readStack->executeStackOperation(2, "NOINSTR");
-                        std::cout  << strInstr << " (RECEIVING) --- FROM P" << id << std::endl;               
+                        //std::cout  << strInstr << " (RECEIVING) --- FROM P" << id << std::endl;               
                     }
                    ctx.current_state = state::RETRY;
                 } else {

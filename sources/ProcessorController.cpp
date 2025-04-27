@@ -9,6 +9,8 @@ ProcessorController::ProcessorController(std::vector<std::thread> &workers) {
     responsesStack = new InstructionList();
     requestStack = new InstructionList();
 
+
+
     readStackList = new List(); 
     readCacheStackList = new List();
 
@@ -35,22 +37,42 @@ ProcessorController::ProcessorController(std::vector<std::thread> &workers) {
         processors[i].processorRead->processorThread(); 
         processors[i].processorCache->processorThread();
     }
-    for (int i = 0; i < 10; i++)
-        for (int i = 0; i < 8; i++) {
-            processors[i].processorWrite->sendOneInstruction(); 
-        }
-    
+   
+
 }
 
-void ProcessorController::step(){
+int ProcessorController::step(int step){
   
-
-    while(responsesStack->size.load() != 8) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+     
+    for (int i = 0; i < 8; i++) {
+        processors[i].processorWrite->sendOneInstruction(); 
     }
-    std::cout << "Step finished" << std::endl;
-    responsesStack->showStack();
-    responsesStack->head = nullptr;
-    responsesStack->size = 0;
+    
+    while(responsesStack->size.load() != 8){
+       
+    }
 
+     
+    std::cout << "____________Responses____________" << step << std::endl;
+    responsesStack->showStack();  
+    for (int i = 0; i < 8; i++) {
+        responsesStack->executeStackOperation(2, "NOINSTR");
+    }   
+    std::cout << "_________________________________" << std::endl;
+
+    return 1; 
+
+}
+
+void ProcessorController::completeExecution(){
+    for(int i = 0; i < 10; i++)
+        for (int j = 0; j < 8; j++)
+            processors[j].processorWrite->sendOneInstruction();
+    
+    while(responsesStack->size.load() != 80){
+
+    }
+
+    responsesStack->showStack();
+        
 }

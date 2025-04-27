@@ -18,6 +18,8 @@ class ProcessorController{
 
     ProcessorController(std::vector<std::thread>& workers);
 
+    int step(int step);
+    int previous = 0;
 
     std::vector<std::thread>* workers;
     InstructionList *writeStack; 
@@ -39,7 +41,9 @@ class ProcessorController{
     InstructionList *responsesStack; 
     InstructionList *requestStack; 
 
-    void step(); 
+    void completeExecution();
+
+ 
 
 };       
 #endif

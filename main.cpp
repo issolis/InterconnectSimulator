@@ -1,21 +1,35 @@
 #include <iostream>
 #include <vector>
+#include <thread>
 #include "ProcessorController.h"
 
+void pseudoMain() {
+    
 
+}
 
 int main() {
-    
-    std::cout<< " \n\n\n\nPROGRAM EXECUTION \n\n\n\n" << std::endl;
+    std::cout << " \n\n\n\nPROGRAM EXECUTION \n\n\n\n" << std::endl;
     
     std::vector<std::thread>* workers = new std::vector<std::thread>();
+    ProcessorController* controller = new ProcessorController(*workers);
 
-    ProcessorController *controller = new ProcessorController(*workers);
-   
-    for (auto& t : *workers) {
-        t.join();
+    for(int i = 0; i < 10; i++) {
+        controller->step(i);
     }
-   
-    return 0; 
 
+    //controller->completeExecution();
+
+
+    for (auto& t : *workers) {
+        if (t.joinable()) { // Checa si el thread se puede esperar
+            t.join();       // Espera a que termine
+        }
+    }
+
+    
+
+    // CRITICAL INSTRUCTION
+    controller->interconnectBus->join();
+    return 0;
 }
