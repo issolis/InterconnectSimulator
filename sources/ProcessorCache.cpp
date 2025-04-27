@@ -57,7 +57,7 @@ void ProcessorCache::processorThreadFunction() {
 
                             
                             std::string response = "ICK_ACK " + std::to_string(id) + ", 0" ;    
-                            std::cout << response << " (SENDING) --- FROM P" << id << std::endl;
+                            //std::cout << response << " (SENDING) --- FROM P" << id << std::endl;
                             processorWriteThread(response);
                             
                         } 

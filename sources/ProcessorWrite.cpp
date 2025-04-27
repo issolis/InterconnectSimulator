@@ -41,7 +41,7 @@ void ProcessorWrite::processorThreadFunction(std::string instr) {
                 break;
             case state::VALIDATE:
                 if (stack->size.load() == ctx.start_size) {
-                    std::cout << instr << "  (SENDING) --- FROM P" << id << std::endl;
+                   // std::cout << instr << "  (SENDING) --- FROM P" << id << std::endl;
                     stack->executeStackOperation(1, instr);
                     ctx.current_state = state::COMMIT;
                 } else {
