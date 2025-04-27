@@ -53,7 +53,7 @@ void Interconnect::receiveMessage( ){
 
 
 
-            std::cout << "Data written to address " << address << ": " << data << std::endl;
+            //std::cout << "Data written to address " << address << ": " << data << std::endl;
             sharedMemory->setSharedMemory(address, data);
 
             std::string dataResp = "WRITE_RESP " + src + ", 0x1" + ", " + QoS;
@@ -115,7 +115,9 @@ void Interconnect::receiveMessage( ){
             std::string QoS       = strInstr.substr(comas[1] + 1);
  
             for (int i = 0; i < 8; i++){
-                cacheReadList->getListByPos(i)->getList()->executeStackOperation(1, "INVALIDATE " + cacheLine);
+                std::string cacheInstr = "INVALIDATE " + cacheLine;
+                std::cout << cacheInstr << " (SENDING) --- FROM INTERCONNECT" << std::endl;
+                cacheReadList->getListByPos(i)->getList()->executeStackOperation(1, cacheInstr);
             }
             
             while (writeCacheStack->size.load() != 8){

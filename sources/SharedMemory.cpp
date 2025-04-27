@@ -53,10 +53,10 @@ void SharedMemory::setSharedMemory(std::string address, std::string value)
         (*sharedMemory)[addressInt + i/2] = val;       
     }  
 
-    
+    /*
     for (int i = addressInt; i < addressInt + addressSpaces; i++){
         std::cout << "Address: " << i << " Value: " << (*sharedMemory)[i] << std::endl;
-    }
+    }*/
 }
 
 std::string SharedMemory::getSharedMemory(std::string address, std::string size){

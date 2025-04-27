@@ -5,7 +5,7 @@
 #include <chrono>
 
 
-ProcessorWrite::ProcessorWrite(InstructionList &stack, std::vector<std::thread>& workers, CacheMemory &cacheMemory, std::string& fileName) {
+ProcessorWrite::ProcessorWrite(InstructionList &stack, std::vector<std::thread>& workers, CacheMemory &cacheMemory, std::string& fileName, int id) {
     this->stack = &stack;
     this->workers = &workers; 
     instrMem = new InstructionMemory(fileName); 
@@ -36,11 +36,12 @@ void ProcessorWrite::processorThreadFunction(std::string instr) {
                 ctx.current_state = state::EXECUTE;
                 break;
             case state::EXECUTE:
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 ctx.current_state = state::VALIDATE;
                 break;
             case state::VALIDATE:
                 if (stack->size.load() == ctx.start_size) {
+                    std::cout << instr << "  (SENDING) --- FROM P" << id << std::endl;
                     stack->executeStackOperation(1, instr);
                     ctx.current_state = state::COMMIT;
                 } else {

@@ -5,6 +5,6 @@ Processor::Processor(InstructionList &readStack, InstructionList &writeStack, In
     cacheMemory = new CacheMemory();
    
     processorRead  = new ProcessorRead(readStack, workers, id);
-    processorWrite = new ProcessorWrite(writeStack, workers, *cacheMemory, fileName);
+    processorWrite = new ProcessorWrite(writeStack, workers, *cacheMemory, fileName, id);
     processorCache = new ProcessorCache(readCacheStack, writeCacheStack,workers, *cacheMemory, id);
 }

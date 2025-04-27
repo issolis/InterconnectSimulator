@@ -56,31 +56,10 @@ void ProcessorCache::processorThreadFunction() {
                             }
 
                             
-                          
-                            if(id == 0){
-                                processorWriteThread("ICK_ACK 0, 0");
-                            }
-                            else if(id == 1){
-                                processorWriteThread("ICK_ACK 1, 0");
-                            }
-                            else if(id == 2){
-                                processorWriteThread("ICK_ACK 2, 0");
-                            }
-                            else if(id == 3){
-                                processorWriteThread("ICK_ACK 3, 0");
-                            }  
-                            else if(id == 4){
-                                processorWriteThread("ICK_ACK 4, 0");
-                            }
-                            else if(id == 5){
-                                processorWriteThread("ICK_ACK 5, 0");
-                            }
-                            else if(id == 6){
-                                processorWriteThread("ICK_ACK 6, 0");
-                            }
-                            else if(id == 7){
-                                processorWriteThread("ICK_ACK 7, 0");
-                            }   
+                            std::string response = "ICK_ACK " + std::to_string(id) + ", 0" ;    
+                            std::cout << response << " (SENDING) --- FROM P" << id << std::endl;
+                            processorWriteThread(response);
+                            
                         } 
                     }
                    ctx.current_state = state::RETRY;
@@ -112,12 +91,11 @@ void ProcessorCache::processorWriteThreadFunction(std::string instr) {
                 ctx.current_state = state::EXECUTE;
                 break;
             case state::EXECUTE:
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 ctx.current_state = state::VALIDATE;
                 break;
             case state::VALIDATE:
                 if (writeCacheStack->size.load() == ctx.start_size) {
-                    std::cout << instr << " --- FROM P"<< id << std::endl; 
                     writeCacheStack->executeStackOperation(1, instr);
                     ctx.current_state = state::COMMIT;
                 } else {

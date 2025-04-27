@@ -55,7 +55,7 @@ int main() {
         processors[i].processorCache->processorThread();
     }
     for(int j = 0; j<1; j++){
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 1; i++) {
             processors[i].processorWrite->sendOneInstruction(); 
          
         }
