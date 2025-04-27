@@ -40,8 +40,9 @@ class ProcessorController{
     Interconnect *interconnectBus; 
     InstructionList *responsesStack; 
     InstructionList *requestStack; 
+    void closeExecution();
 
-    void completeExecution();
+    int completeExecution();
 
  
 

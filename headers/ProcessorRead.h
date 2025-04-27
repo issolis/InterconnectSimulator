@@ -14,6 +14,7 @@ public:
     std::vector<std::thread>* workers;
     InstructionList *readStack;
     int id; 
+    bool isRunning = true;
     void processorThreadFunction();
     void processorThread();
 

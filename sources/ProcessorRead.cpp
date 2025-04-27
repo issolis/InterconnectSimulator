@@ -24,7 +24,7 @@ struct thread_context {
 void ProcessorRead::processorThreadFunction() {
     thread_context ctx;
 
-    while (!ctx.committed) {
+    while (!ctx.committed && isRunning) {
         switch (ctx.current_state) {
             case state::READ:
                 ctx.start_size = readStack->size.load(std::memory_order_acquire);

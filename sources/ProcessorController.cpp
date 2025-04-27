@@ -60,19 +60,41 @@ int ProcessorController::step(int step){
     }   
     std::cout << "_________________________________" << std::endl;
 
+
     return 1; 
 
 }
 
-void ProcessorController::completeExecution(){
+void ProcessorController::closeExecution(){
+    interconnectBus->running = false;
+    for(int i = 0; i < 8; i++){
+        processors[i].processorRead->isRunning = false;
+        processors[i].processorCache->isRunning = false;
+    }
+}
+
+int ProcessorController::completeExecution()
+{
     for(int i = 0; i < 10; i++)
         for (int j = 0; j < 8; j++)
             processors[j].processorWrite->sendOneInstruction();
     
-    while(responsesStack->size.load() != 80){
+    while(responsesStack->size.load() != 80 ){
 
     }
 
     responsesStack->showStack();
-        
+    for (int i = 0; i < 80; i++) {
+        responsesStack->executeStackOperation(2, "NOINSTR");
+    }
+
+    /*interconnectBus->running = false;
+    for(int i = 0; i < 8; i++){
+        processors[i].processorRead->isRunning = false;
+        processors[i].processorCache->isRunning = false;
+    }*/
+
+
+
+    return 1;
 }

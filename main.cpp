@@ -14,16 +14,17 @@ int main() {
     std::vector<std::thread>* workers = new std::vector<std::thread>();
     ProcessorController* controller = new ProcessorController(*workers);
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 1; i < 11; i++) {
         controller->step(i);
     }
 
-    //controller->completeExecution();
-
-
-   
+    //controller->closeExecution();
 
     
+
+    
+
+    //controller->completeExecution();
 
     // CRITICAL INSTRUCTION
     controller->interconnectBus->join();

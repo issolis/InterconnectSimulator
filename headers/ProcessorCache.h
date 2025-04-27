@@ -17,6 +17,7 @@ public:
     InstructionList *readCacheStack; 
     InstructionList *writeCacheStack; 
     CacheMemory *cacheMemory;
+    bool isRunning = true;
     int id; 
 
     void processorThreadFunction();

@@ -7,6 +7,7 @@ ProcessorCache::ProcessorCache(InstructionList &readCacheStack, InstructionList 
     this->workers = &workers;
     this->cacheMemory = &cacheMemory;
     this->id = id;
+    isRunning = true;
 }
 
 enum class state {
@@ -26,7 +27,7 @@ struct thread_context {
 void ProcessorCache::processorThreadFunction() {
     thread_context ctx;
 
-    while (!ctx.committed) {
+    while (!ctx.committed && isRunning) {
         switch (ctx.current_state) {
             case state::READ:
                 ctx.start_size = readCacheStack->size.load(std::memory_order_acquire);
