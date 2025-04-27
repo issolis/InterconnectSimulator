@@ -115,7 +115,7 @@ void Interconnect::receiveMessage( ){
  
             for (int i = 0; i < 8; i++){
                 std::string cacheInstr = "INVALIDATE " + cacheLine;
-                std::cout << cacheInstr << " (SENDING) --- FROM INTERCONNECT" << std::endl;
+                //std::cout << cacheInstr << " (SENDING) --- FROM INTERCONNECT" << std::endl;
                 cacheReadList->getListByPos(i)->getList()->executeStackOperation(1, cacheInstr);
             }
             

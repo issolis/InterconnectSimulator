@@ -36,7 +36,7 @@ ProcessorController::ProcessorController(std::vector<std::thread> &workers) {
         processors[i].processorRead->processorThread(); 
         processors[i].processorCache->processorThread();
     }
-
+    for (int i = 0; i < 10; i++)
     step();
     
 }
@@ -51,6 +51,7 @@ void ProcessorController::step(){
     }
     std::cout << "Step finished" << std::endl;
     responsesStack->showStack();
-
+    responsesStack->head = nullptr;
+    responsesStack->size = 0;
 
 }
