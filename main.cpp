@@ -21,15 +21,17 @@ int main() {
     //controller->completeExecution();
 
 
-    for (auto& t : *workers) {
-        if (t.joinable()) { // Checa si el thread se puede esperar
-            t.join();       // Espera a que termine
-        }
-    }
+   
 
     
 
     // CRITICAL INSTRUCTION
     controller->interconnectBus->join();
+
+    for (auto& t : *workers) {
+        if (t.joinable()) { // Checa si el thread se puede esperar
+            t.join();       // Espera a que termine
+        }
+    }
     return 0;
 }
