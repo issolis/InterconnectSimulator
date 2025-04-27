@@ -58,10 +58,12 @@ MainWindow::MainWindow(QWidget *parent)
         this->addItemToTable(ui->SharedMemStateTable, QString("Enabled"), i, 1);
     }
 
-    this->changeTable();
+    this->changeTable(0);
+
+
 
     //Set up del principal
-
+    connect(ui->PEComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeTable(int)));
     connect(ui->actionNextView, &QAction::triggered, this, &MainWindow::onActionNextViewTriggered);
     connect(ui->actionPreviousView, &QAction::triggered, this, &MainWindow::onActionPreviousViewTriggered);
 }
@@ -86,16 +88,16 @@ MainWindow::~MainWindow()
     }
 }
 
-void MainWindow::changeTable(){
-    int memoryBlocks;
-
-    if(ui->PEComboBox->currentIndex() == 0){
-        memoryBlocks = 4096;
+void MainWindow::changeTable(int index){
+    int memoryBlocks = 128;
+    if(index == 0){
+        memoryBlocks += 3970;
+        ui->MemoryStateTable->setVisible(false);
+        ui->SharedMemStateTable->setVisible(true);
     }else{
-        memoryBlocks = 128;
+        ui->MemoryStateTable->setVisible(true);
+        ui->SharedMemStateTable->setVisible(false);
     }
-
-
 }
 
 void MainWindow::onActionPreviousViewTriggered(){

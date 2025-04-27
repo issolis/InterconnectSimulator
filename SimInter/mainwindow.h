@@ -25,6 +25,7 @@ private slots:
     void onActionCargarMemoriasTriggered();
     void onActionPreviousViewTriggered();
     void onActionNextViewTriggered();
+    void changeTable(int index);
 
 
 private:
@@ -37,7 +38,7 @@ private:
     int current_page = 1;
     void showCurrentPage();
     bool saveFile(int peNum);
-    void changeTable();
+
     std::string int_to_hex(int decimal);
     void addItemToTable(QTableWidget * table ,QString text, int row, int column);
 };
