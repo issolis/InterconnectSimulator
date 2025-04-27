@@ -1,3 +1,4 @@
+
 #include "ProcessorController.h"
 
 ProcessorController::ProcessorController(std::vector<std::thread> &workers) {
@@ -26,9 +27,7 @@ ProcessorController::ProcessorController(std::vector<std::thread> &workers) {
             *writeCacheStack, 
             workers, 
             paths[i], 
-            i, 
-            *responsesStack, 
-            *requestStack
+            i
         );
     }
 
@@ -37,14 +36,14 @@ ProcessorController::ProcessorController(std::vector<std::thread> &workers) {
         processors[i].processorCache->processorThread();
     }
     for (int i = 0; i < 10; i++)
-    step();
+        for (int i = 0; i < 8; i++) {
+            processors[i].processorWrite->sendOneInstruction(); 
+        }
     
 }
 
 void ProcessorController::step(){
-    for (int i = 0; i < 8; i++) {
-        processors[i].processorWrite->sendOneInstruction(); 
-    }
+  
 
     while(responsesStack->size.load() != 8) {
         std::this_thread::sleep_for(std::chrono::milliseconds(200));

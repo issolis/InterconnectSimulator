@@ -13,13 +13,11 @@ public:
     ProcessorCache *processorCache;
     InstructionList *cacheReadStack; 
     InstructionList *cacheWriteStack;
-    InstructionList *responsesStack;
 
     CacheMemory *cacheMemory;
 
    
-    Processor(InstructionList &readStack, InstructionList &writeStack, InstructionList &readCacheStack, InstructionList &writeCacheStack, 
-        std::vector<std::thread> &workers, std::string &fileName, int id, InstructionList &responsesStack, InstructionList &requestStack);
+    Processor(InstructionList &readStack, InstructionList &writeStack, InstructionList &readCacheStack, InstructionList &writeCacheStack, std::vector<std::thread> &workers, std::string &fileName, int id);
 };
 
 #endif 

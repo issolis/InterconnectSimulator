@@ -33,7 +33,7 @@ void ProcessorCache::processorThreadFunction() {
                 ctx.current_state = state::EXECUTE;
                 break;
             case state::EXECUTE:
-                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                //std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 ctx.current_state = state::VALIDATE;
                 break;
             case state::VALIDATE:
@@ -57,7 +57,7 @@ void ProcessorCache::processorThreadFunction() {
 
                             
                             std::string response = "ICK_ACK " + std::to_string(id) + ", 0" ;    
-                            //std::cout << response << " (SENDING) --- FROM P" << id << std::endl;
+                            std::cout << response << " (SENDING) --- FROM P" << id << std::endl;
                             processorWriteThread(response);
                             
                         } 
@@ -91,7 +91,7 @@ void ProcessorCache::processorWriteThreadFunction(std::string instr) {
                 ctx.current_state = state::EXECUTE;
                 break;
             case state::EXECUTE:
-                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                //std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 ctx.current_state = state::VALIDATE;
                 break;
             case state::VALIDATE:

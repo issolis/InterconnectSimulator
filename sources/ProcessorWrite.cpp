@@ -5,13 +5,11 @@
 #include <chrono>
 
 
-ProcessorWrite::ProcessorWrite(InstructionList &stack, std::vector<std::thread>& workers, CacheMemory &cacheMemory, std::string& fileName, int id, InstructionList &requestStack) {
+ProcessorWrite::ProcessorWrite(InstructionList &stack, std::vector<std::thread>& workers, CacheMemory &cacheMemory, std::string& fileName, int id) {
     this->stack = &stack;
     this->workers = &workers; 
     instrMem = new InstructionMemory(fileName); 
     this->cacheMemory = &cacheMemory; 
-    this->id = id;
-    this->requestStack = &requestStack;
 }
 
 enum class state {
@@ -43,7 +41,7 @@ void ProcessorWrite::processorThreadFunction(std::string instr) {
                 break;
             case state::VALIDATE:
                 if (stack->size.load() == ctx.start_size) {
-                    //std::cout << instr << "  (SENDING) --- FROM P" << id << std::endl;
+                    std::cout << instr << "  (SENDING) --- FROM P" << id << std::endl;
                     stack->executeStackOperation(1, instr);
                     ctx.current_state = state::COMMIT;
                 } else {
@@ -107,41 +105,4 @@ std::string ProcessorWrite::manipulateInstruction(std::string &instr){
     return instr; 
 }
 
-
-void ProcessorWrite::processorRequestThreadFunction(std::string instr) {
-    thread_context ctx;
-
-    while (!ctx.committed) {
-        switch (ctx.current_state) {
-            case state::READ:
-                ctx.start_size = requestStack->size.load(std::memory_order_acquire);
-                ctx.current_state = state::EXECUTE;
-                break;
-            case state::EXECUTE:
-                //std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                ctx.current_state = state::VALIDATE;
-                break;
-            case state::VALIDATE:
-                if (requestStack->size.load() == ctx.start_size) {
-                    requestStack->executeStackOperation(1, instr);
-                    ctx.current_state = state::COMMIT;
-                } else {
-                    ctx.current_state = state::RETRY;
-                }
-                break;
-            case state::COMMIT:
-                ctx.committed = true;
-                break;
-            case state::RETRY:
-                ctx.current_state = state::READ;
-                break;
-        }
-    }
-}
-
-void ProcessorWrite::processorRequestThread(std::string instr) {
-    workers->emplace_back([this, instr]() {
-        this->processorRequestThreadFunction(instr);
-    });
-}
 
