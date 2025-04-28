@@ -91,13 +91,15 @@ MainWindow::~MainWindow()
 void MainWindow::changeTable(int index){
     int memoryBlocks = 128;
     if(index == 0){
-        memoryBlocks += 3970;
+        memoryBlocks = 4096;
         ui->MemoryStateTable->setVisible(false);
         ui->SharedMemStateTable->setVisible(true);
     }else{
         ui->MemoryStateTable->setVisible(true);
         ui->SharedMemStateTable->setVisible(false);
     }
+
+
 }
 
 void MainWindow::onActionPreviousViewTriggered(){
