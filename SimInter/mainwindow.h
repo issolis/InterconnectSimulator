@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QTextEdit>
 #include <QTableWidget>
+#include <vector>
+#include <thread>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,6 +28,7 @@ private slots:
     void onActionPreviousViewTriggered();
     void onActionNextViewTriggered();
     void changeTable(int index);
+    void onActionPlayTriggered();
 
 
 private:
@@ -41,5 +44,8 @@ private:
 
     std::string int_to_hex(int decimal);
     void addItemToTable(QTableWidget * table ,QString text, int row, int column);
+
+    //Workers del procesador:
+    std::vector<std::thread>* workers = new std::vector<std::thread>();
 };
 #endif // MAINWINDOW_H

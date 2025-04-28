@@ -9,6 +9,7 @@
 #include <QStyleFactory>
 #include <fstream>
 #include <sstream>
+#include "./Processor/headers/ProcessorController.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -55,17 +56,39 @@ MainWindow::MainWindow(QWidget *parent)
         ui->SharedMemStateTable->insertRow(i);
         QString hexValue = QString("0x").append(this->int_to_hex(i));
         this->addItemToTable(ui->SharedMemStateTable, hexValue, i, 0);
-        this->addItemToTable(ui->SharedMemStateTable, QString("Enabled"), i, 1);
+        this->addItemToTable(ui->SharedMemStateTable, QString("VALID"), i, 1);
     }
 
     this->changeTable(0);
-
 
 
     //Set up del principal
     connect(ui->PEComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeTable(int)));
     connect(ui->actionNextView, &QAction::triggered, this, &MainWindow::onActionNextViewTriggered);
     connect(ui->actionPreviousView, &QAction::triggered, this, &MainWindow::onActionPreviousViewTriggered);
+    connect(ui->actionPlay, &QAction::triggered, this, &MainWindow::onActionPlayTriggered);
+
+}
+
+void MainWindow::onActionPlayTriggered(){
+    qDebug() << "Here 0";
+
+    ProcessorController* controller = new ProcessorController(*(this->workers));
+    qDebug() << "Here 1";
+    for(int i = 1; i < 11; i++) {
+        controller->step(i);
+    }
+    qDebug() << "Here 2";
+    controller->interconnectBus->join();
+    qDebug() << "Here 3";
+    for (auto& t : *(this->workers)) {
+        if (t.joinable()) { // Checa si el thread se puede esperar
+            t.join();       // Espera a que termine
+        }
+    }
+    qDebug() << "Here 4";
+    delete controller;
+    qDebug() << "Here 5";
 }
 
 std::string MainWindow::int_to_hex(int decimal) {
@@ -73,6 +96,7 @@ std::string MainWindow::int_to_hex(int decimal) {
     ss << std::hex << std::uppercase << decimal;
     return ss.str();
 }
+
 void MainWindow::addItemToTable(QTableWidget * table ,QString text, int row, int column){
     QTableWidgetItem * item = new QTableWidgetItem();
     item->setText(text);
@@ -86,6 +110,7 @@ MainWindow::~MainWindow()
         delete PETabs[i];
         delete PETextEdits[i];
     }
+    delete workers;
 }
 
 void MainWindow::changeTable(int index){

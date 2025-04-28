@@ -11,6 +11,32 @@ qt_add_executable(SimInter
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    Processor/headers/CacheMemory.h
+    Processor/headers/Instruction.h
+    Processor/headers/InstructionList.h
+    Processor/headers/InstructionMemory.h
+    Processor/headers/Interconnect.h
+    Processor/headers/List.h
+    Processor/headers/ListNode.h
+    Processor/headers/Processor.h
+    Processor/headers/ProcessorCache.h
+    Processor/headers/ProcessorController.h
+    Processor/headers/ProcessorRead.h
+    Processor/headers/ProcessorWrite.h
+    Processor/headers/SharedMemory.h
+    Processor/sources/CacheMemory.cpp
+    Processor/sources/Instruction.cpp
+    Processor/sources/InstructionList.cpp
+    Processor/sources/InstructionMemory.cpp
+    Processor/sources/Interconnect.cpp
+    Processor/sources/List.cpp
+    Processor/sources/ListNode.cpp
+    Processor/sources/Processor.cpp
+    Processor/sources/ProcessorCache.cpp
+    Processor/sources/ProcessorController.cpp
+    Processor/sources/ProcessorRead.cpp
+    Processor/sources/ProcessorWrite.cpp
+    Processor/sources/SharedMemory.cpp
 )
 
 target_link_libraries(SimInter
