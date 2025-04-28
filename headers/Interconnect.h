@@ -8,7 +8,7 @@
 #include <mutex>
 #include <thread>
 #include "List.h"
-#include "List.h"
+#include "SharedMemory.h"
 
 
 class Interconnect
@@ -18,15 +18,16 @@ private:
 
 public:
 
-    Interconnect(InstructionList& stack, InstructionList& cacheWriteStack, List& stacks, List& cacheReadList);
+    Interconnect(InstructionList& stack, InstructionList& cacheWriteStack, List& stacks, List& cacheReadList, InstructionList& responseStack);
     
     InstructionList* stack; 
     InstructionList* writeCacheStack;
-    List* stacks;
+    InstructionList* responseStack;
+    std::mutex stack_mutex;
+    std::mutex sentMutex; 
+    List* readStackList;
     List* cacheReadList;
-    InstructionList* responseStack; 
-    std::vector<std::thread>* responseThreads;
-
+    SharedMemory* sharedMemory;
     std::thread monitor; 
     std::atomic<bool> running{false}; 
   
@@ -34,6 +35,7 @@ public:
     void showStack();
     void startSnooping();
     void join();
+
 };
 
 #endif

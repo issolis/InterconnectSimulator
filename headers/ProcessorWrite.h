@@ -9,10 +9,10 @@
 class ProcessorWrite {
 public:
 
-    ProcessorWrite(InstructionList &stack, std::vector<std::thread>& worker, std::string& fileName);
+    ProcessorWrite(InstructionList &stack, std::vector<std::thread>& worker, CacheMemory &cacheMemory, std::string& fileName, int id);
     std::vector<std::thread>* worker;
-    
-    CacheMemory *cache; 
+    int id; 
+    CacheMemory *cacheMemory; 
 
     InstructionMemory *instrMem; 
 

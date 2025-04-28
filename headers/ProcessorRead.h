@@ -5,6 +5,7 @@
 #include <string>
 #include <thread>
 #include "InstructionList.h"
+#include "CacheMemory.h"
 
 class ProcessorRead {
 public:
@@ -13,6 +14,7 @@ public:
     std::vector<std::thread>* workers;
     InstructionList *readStack;
     int id; 
+    bool isRunning = true;
     void processorThreadFunction();
     void processorThread();
 

@@ -1,11 +1,13 @@
 #include "ProcessorCache.h"
 #include <cstring>
 
-ProcessorCache::ProcessorCache(InstructionList &readCacheStack, InstructionList &writeCacheStack, std::vector<std::thread> &workers, int id){
+ProcessorCache::ProcessorCache(InstructionList &readCacheStack, InstructionList &writeCacheStack, std::vector<std::thread> &workers,  CacheMemory &cacheMemory, int id){
     this->readCacheStack = &readCacheStack;
     this->writeCacheStack = &writeCacheStack;
     this->workers = &workers;
+    this->cacheMemory = &cacheMemory;
     this->id = id;
+    isRunning = true;
 }
 
 enum class state {
@@ -25,14 +27,14 @@ struct thread_context {
 void ProcessorCache::processorThreadFunction() {
     thread_context ctx;
 
-    while (!ctx.committed) {
+    while (!ctx.committed && isRunning) {
         switch (ctx.current_state) {
             case state::READ:
                 ctx.start_size = readCacheStack->size.load(std::memory_order_acquire);
                 ctx.current_state = state::EXECUTE;
                 break;
             case state::EXECUTE:
-                std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                //std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 ctx.current_state = state::VALIDATE;
                 break;
             case state::VALIDATE:
@@ -40,32 +42,25 @@ void ProcessorCache::processorThreadFunction() {
                     if (strcmp(readCacheStack->executeStackOperation(3, "NOINSTR"), "notnull") == 0) {
                         char* instr = readCacheStack->executeStackOperation(4, "NOINSTR"); 
                         readCacheStack->executeStackOperation(2, "NOINSTR"); 
-                        if (strcmp(instr, "INVALIDATE RESPONSE") == 0) {
-                           
-                            if(id == 0){
-                                processorWriteThread("ICK_ACK 0, 0");
+                        std::string strInstr(instr);
+                        if (strInstr.substr(0, 10) == "INVALIDATE"){
+                            std::string cacheLine = strInstr.substr(11);
+                            
+
+                            int address = 0; 
+                            for (int i = 0; i < 128; i++){
+                                if (cacheLine == std::to_string(i)){
+                                    address = i;
+                                    cacheMemory->changeMemState(i, "INVALID");
+                                    break;
+                                }
                             }
-                            else if(id == 1){
-                                processorWriteThread("ICK_ACK 1, 0");
-                            }
-                            else if(id == 2){
-                                processorWriteThread("ICK_ACK 2, 0");
-                            }
-                            else if(id == 3){
-                                processorWriteThread("ICK_ACK 3, 0");
-                            }  
-                            else if(id == 4){
-                                processorWriteThread("ICK_ACK 4, 0");
-                            }
-                            else if(id == 5){
-                                processorWriteThread("ICK_ACK 5, 0");
-                            }
-                            else if(id == 6){
-                                processorWriteThread("ICK_ACK 6, 0");
-                            }
-                            else if(id == 7){
-                                processorWriteThread("ICK_ACK 7, 0");
-                            }   
+
+                            
+                            std::string response = "ICK_ACK " + std::to_string(id) + ", 0" ;    
+                            //std::cout << response << " (SENDING) --- FROM P" << id << std::endl;
+                            processorWriteThread(response);
+                            
                         } 
                     }
                    ctx.current_state = state::RETRY;
@@ -97,7 +92,7 @@ void ProcessorCache::processorWriteThreadFunction(std::string instr) {
                 ctx.current_state = state::EXECUTE;
                 break;
             case state::EXECUTE:
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                //std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 ctx.current_state = state::VALIDATE;
                 break;
             case state::VALIDATE:
