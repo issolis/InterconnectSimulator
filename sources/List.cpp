@@ -38,7 +38,9 @@ void List::insertList(int id){
         newNode->id = id; 
         
         ListNode *currentNode = head; 
-        while (currentNode->getNext()!=nullptr) currentNode = currentNode->getNext(); 
+        while (currentNode->getNext()!=nullptr) {
+            currentNode = currentNode->getNext(); 
+        }
         currentNode->setNext(newNode); 
     }
 }

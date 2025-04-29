@@ -8,6 +8,10 @@ InstructionList::InstructionList()
     size = 0; 
 }
 
+InstructionList::~InstructionList(){
+    delete head;
+    delete last;
+}
 
 char* InstructionList::executeStackOperation(int op, std::string instr){
     std::lock_guard<std::mutex> lock(listMutex); 
@@ -30,20 +34,21 @@ char* InstructionList::executeStackOperation(int op, std::string instr){
 }
 void InstructionList::addInstr(std::string &instr)
 {   
-    Instruction *newInstr = new Instruction(instr); 
+    Instruction *newInstr = new Instruction(instr);
     if (head == nullptr){
-        head = newInstr; 
-        last = newInstr;        
+        head = newInstr;
+        last = newInstr;
     }else{
-        Instruction *currentInstr = head; 
+        Instruction *currentInstr = head;
         while(currentInstr->getNextInstr() != nullptr){
             currentInstr = currentInstr->getNextInstr();
         }
-        currentInstr->setNextInstr(newInstr); 
-        last = currentInstr->getNextInstr(); 
+        currentInstr->setNextInstr(newInstr);
+        last = currentInstr->getNextInstr();
     }
-    size.fetch_add(1, std::memory_order_relaxed); 
+    size.fetch_add(1, std::memory_order_relaxed);
 }
+
 
 void InstructionList::popInstr()
 {
@@ -70,6 +75,20 @@ void InstructionList::showStack(){
         currentInstr = currentInstr->getNextInstr(); 
     }
    // std::cout<<size<<std::endl; 
+}
+
+Instruction * InstructionList::getInstruction(int index){
+    Instruction * curr = this->head;
+    if(index < size){
+        int i = 0;
+        while(i < index){
+            curr = curr->getNextInstr();
+            i++;
+        }
+        return curr;
+    }else{
+        return nullptr;
+    }
 }
 
 InstructionList* InstructionList::copy() {

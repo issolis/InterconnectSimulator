@@ -3,20 +3,18 @@
 #include <QDebug>
 
 ProcessorController::ProcessorController(std::vector<std::thread> &workers) {
-    writeStack = new InstructionList(); 
-    writeCacheStack = new InstructionList();  
+    writeStack = new InstructionList();
+    writeCacheStack = new InstructionList();
     responsesStack = new InstructionList();
     requestStack = new InstructionList();
 
 
-    readStackList = new List(); 
+    readStackList = new List();
     readCacheStackList = new List();
 
     for (int i = 0; i < 8; i++) {
         readStackList->insertList(i);
-        qDebug() << "Here inner A " << i;
         readCacheStackList->insertList(i);
-        qDebug() << "Here inner B " << i;
     }
 
     interconnectBus = new Interconnect(*writeStack, *writeCacheStack, *readStackList, *readCacheStackList, *responsesStack);
@@ -39,7 +37,17 @@ ProcessorController::ProcessorController(std::vector<std::thread> &workers) {
 
 }
 
-int ProcessorController::step(int step){
+ProcessorController::~ProcessorController(){
+    delete this->readStackList;
+    delete this->readCacheStackList;
+    delete this->writeCacheStack;
+    delete this->writeStack;
+    delete this->responsesStack;
+    delete this->requestStack;
+
+}
+
+InstructionList * ProcessorController::step(int step){
   
      
     for (int i = 0; i < 8; i++) {
@@ -51,15 +59,15 @@ int ProcessorController::step(int step){
     }
 
      
-    std::cout << "____________Responses____________" << step << std::endl;
-    responsesStack->showStack();  
+    //std::cout << "____________Responses____________" << step << std::endl;
+    //responsesStack->showStack();
+    InstructionList * listOut = responsesStack->copy();
     for (int i = 0; i < 8; i++) {
         responsesStack->executeStackOperation(2, "NOINSTR");
-    }   
-    std::cout << "_________________________________" << std::endl;
+    }
+    //std::cout << "_________________________________" << std::endl;
 
-
-    return 1; 
+    return listOut;
 
 }
 

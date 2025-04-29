@@ -5,6 +5,9 @@ List::List(){
     head = nullptr; 
 }
 
+List::~List(){
+    delete head;
+}
 
 ListNode* List::getListByPos(int pos){
     int i = 0; 
@@ -32,13 +35,13 @@ void List::insertList(int id){
         ListNode *newNode = new ListNode(*newList); 
         newNode->id = id; 
         head = newNode;
-        qDebug() << "Here A List " << id;
     }else{
         InstructionList *newList = new InstructionList(); 
         ListNode *newNode = new ListNode(*newList); 
         newNode->id = id;
+
         ListNode * currentNode = head;
-        while (currentNode->getNext()!=NULL){
+        while (currentNode->getNext()!=nullptr){
             currentNode = currentNode->getNext();
         }
 

@@ -47,9 +47,9 @@ MainWindow::MainWindow(QWidget *parent)
         //qDebug() << this->int_to_hex(i);
         QString hexValue = QString("0x").append(this->int_to_hex(i));
         this->addItemToTable(ui->MemoryStateTable, hexValue, i, 0);
-        this->addItemToTable(ui->MemoryStateTable, QString("Enabled"), i, 1);
+        this->addItemToTable(ui->MemoryStateTable, QString("VALID"), i, 1);
         this->addItemToTable(ui->SharedMemStateTable, hexValue, i, 0);
-        this->addItemToTable(ui->SharedMemStateTable, QString("Enabled"), i, 1);
+        this->addItemToTable(ui->SharedMemStateTable, QString("VALID"), i, 1);
     }
 
     for(int i = 128; i < 4096; i++){
@@ -63,32 +63,84 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     //Set up del principal
+
+    this->timerSteps = new QTimer(this);
+    connect(this->timerSteps, &QTimer::timeout, this, &MainWindow::checkStepperExecution);
+
     connect(ui->PEComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeTable(int)));
     connect(ui->actionNextView, &QAction::triggered, this, &MainWindow::onActionNextViewTriggered);
     connect(ui->actionPreviousView, &QAction::triggered, this, &MainWindow::onActionPreviousViewTriggered);
     connect(ui->actionPlay, &QAction::triggered, this, &MainWindow::onActionPlayTriggered);
+    connect(ui->actionStep, &QAction::triggered, this, &MainWindow::onActionStepTriggered);
+}
 
+void MainWindow::checkStepperExecution(){
+    if(this->paso < 10){
+        this->paso++;
+        this->executeSingleStep();
+    }else{
+        this->finishedExecution = true;
+        this->timerSteps->stop();
+
+    }
 }
 
 void MainWindow::onActionPlayTriggered(){
-    qDebug() << "Here 0";
+    if(!hasRunController){
+        this->executeStepsInController();
+    }
+    if(this->finishedExecution){
+        this->finishedExecution = false;
+        this->paso = 1;
+    }
 
+    this->executeSingleStep();
+
+}
+
+void MainWindow::executeSingleStep(){
+    QString InstructionsInThisStep = QString("");
+    for(int i = limitIndex[this->paso -1]; i < limitIndex[this->paso]; i++){
+        InstructionsInThisStep.append(this->fullResponseStack->getInstruction(i)->getInstr());
+        InstructionsInThisStep.append("\n");
+    }
+    ui->ExeOutputTE->setText(InstructionsInThisStep);
+    ui->PasoLabel->setText(QString("Paso: ").append(std::to_string(this->paso)));
+    this->timerSteps->start(1000);
+}
+
+void MainWindow::onActionStepTriggered(){
+    if(!hasRunController){
+        this->executeStepsInController();
+    }
+    if(paso < 10){
+        paso++;
+    }else{
+        paso = 1;
+    }
+
+}
+
+void MainWindow::executeStepsInController(){
     ProcessorController* controller = new ProcessorController(*(this->workers));
-    qDebug() << "Here 1";
-    for(int i = 1; i < 11; i++) {
-        controller->step(i);
-    }
-    qDebug() << "Here 2";
-    controller->interconnectBus->join();
-    qDebug() << "Here 3";
-    for (auto& t : *(this->workers)) {
-        if (t.joinable()) { // Checa si el thread se puede esperar
-            t.join();       // Espera a que termine
+    int instNum = 0;
+    for(int i = 1; i < 11; i++){
+
+        InstructionList * stepList = controller->step(i);
+        Instruction * curr = stepList->head;
+
+        while(curr->getNextInstr() != nullptr){
+            std::string * newInstructionAdded = new std::string(curr->getInstr());
+            fullResponseStack->addInstr(*newInstructionAdded);
+            instNum++;
+            curr = curr->getNextInstr();
         }
+        std::string * newInstructionAdded = new std::string(curr->getInstr());
+        fullResponseStack->addInstr(*newInstructionAdded);
+        instNum++;
+        limitIndex[i] = instNum;
     }
-    qDebug() << "Here 4";
-    delete controller;
-    qDebug() << "Here 5";
+
 }
 
 std::string MainWindow::int_to_hex(int decimal) {
@@ -111,6 +163,7 @@ MainWindow::~MainWindow()
         delete PETextEdits[i];
     }
     delete workers;
+    delete fullResponseStack;
 }
 
 void MainWindow::changeTable(int index){

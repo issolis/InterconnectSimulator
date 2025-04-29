@@ -5,8 +5,8 @@
 class ListNode
 {
 private:
-    InstructionList *list; 
-    ListNode *next; 
+    InstructionList *list;
+    ListNode * next = nullptr;
 public:
     int id; 
     ListNode(InstructionList &list);

@@ -7,7 +7,7 @@ class List
 public:
     List();
 
-
+    ~List();
     ListNode *head;
     ListNode* getListByPos(int pos);
     void show();

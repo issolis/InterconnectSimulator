@@ -18,7 +18,7 @@ int main() {
         controller->step(i);
     }
 
-    //controller->closeExecution();
+    controller->closeExecution();
 
     
 

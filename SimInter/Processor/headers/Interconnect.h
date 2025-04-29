@@ -35,7 +35,7 @@ public:
     void showStack();
     void startSnooping();
     void join();
-
+    void resetListsPointers(InstructionList& stack, InstructionList& cacheWriteStack, List& stacks, List& cacheReadList, InstructionList& responseStack);
 };
 
 #endif

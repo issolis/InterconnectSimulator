@@ -6,6 +6,9 @@
 #include <QTableWidget>
 #include <vector>
 #include <thread>
+#include <QTimer>
+#include "./Processor/headers/InstructionList.h"
+#include "./Processor/headers/Instruction.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,7 +32,8 @@ private slots:
     void onActionNextViewTriggered();
     void changeTable(int index);
     void onActionPlayTriggered();
-
+    void onActionStepTriggered();
+    void checkStepperExecution();
 
 private:
     Ui::MainWindow *ui;
@@ -41,11 +45,22 @@ private:
     int current_page = 1;
     void showCurrentPage();
     bool saveFile(int peNum);
+    QTimer * timerSteps;
+
 
     std::string int_to_hex(int decimal);
     void addItemToTable(QTableWidget * table ,QString text, int row, int column);
 
     //Workers del procesador:
     std::vector<std::thread>* workers = new std::vector<std::thread>();
+    int paso = 1;
+    bool hasRunController = false;
+    bool finishedExecution = false;
+    void executeStepsInController();
+    void executeSingleStep();
+
+    //Stack de respuestas
+    InstructionList * fullResponseStack = new InstructionList();
+    int limitIndex [10] = {0,0,0,0,0,0,0,0,0,0};
 };
 #endif // MAINWINDOW_H

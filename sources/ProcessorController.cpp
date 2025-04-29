@@ -66,11 +66,12 @@ int ProcessorController::step(int step){
 }
 
 void ProcessorController::closeExecution(){
-    interconnectBus->running = false;
+    
     for(int i = 0; i < 8; i++){
         processors[i].processorRead->isRunning = false;
         processors[i].processorCache->isRunning = false;
     }
+    interconnectBus->running = false;
 }
 
 int ProcessorController::completeExecution()

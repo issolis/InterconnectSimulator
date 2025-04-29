@@ -55,6 +55,10 @@
         "fstream": "cpp",
         "optional": "cpp",
         "variant": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "map": "cpp",
+        "ranges": "cpp",
+        "sstream": "cpp",
+        "cinttypes": "cpp"
     }
 }

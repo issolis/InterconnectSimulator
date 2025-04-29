@@ -121,9 +121,9 @@
       <property name="geometry">
        <rect>
         <x>440</x>
-        <y>40</y>
+        <y>70</y>
         <width>321</width>
-        <height>481</height>
+        <height>451</height>
        </rect>
       </property>
      </widget>
@@ -170,6 +170,19 @@
         <string>Estado</string>
        </property>
       </column>
+     </widget>
+     <widget class="QLabel" name="PasoLabel">
+      <property name="geometry">
+       <rect>
+        <x>440</x>
+        <y>40</y>
+        <width>101</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Paso: -</string>
+      </property>
      </widget>
     </widget>
    </widget>

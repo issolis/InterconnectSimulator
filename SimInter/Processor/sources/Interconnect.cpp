@@ -1,6 +1,7 @@
 #include "../../Processor/headers/Interconnect.h"
 #include <iostream>
 #include <cstring>
+#include <QDebug>
 
 Interconnect::Interconnect(InstructionList& stack, InstructionList& writeCacheStack, List& readStackList,  List& cacheReadList, InstructionList& responseStack) {
     this->stack = &stack; 
@@ -9,7 +10,16 @@ Interconnect::Interconnect(InstructionList& stack, InstructionList& writeCacheSt
     this->writeCacheStack = &writeCacheStack;
     this->sharedMemory = new SharedMemory();
     this->responseStack = &responseStack;
-    startSnooping(); 
+    startSnooping();
+}
+
+void Interconnect::resetListsPointers(InstructionList& stack, InstructionList& writeCacheStack, List& readStackList,  List& cacheReadList, InstructionList& responseStack){
+    this->stack = &stack;
+    this->readStackList = &readStackList;
+    this->cacheReadList = &cacheReadList;
+    this->writeCacheStack = &writeCacheStack;
+    this->sharedMemory = new SharedMemory();
+    this->responseStack = &responseStack;
 }
 
 enum class state {
@@ -156,12 +166,17 @@ void Interconnect::startSnooping() {
     running = true;
     monitor = std::thread([this]() {
         while (running) {
-            receiveMessage(); 
+            receiveMessage();
             //std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
+        qDebug() << "Out";
     });
 }
 
 void Interconnect::join(){
-    monitor.join(); 
+    this->running = false;
+    if(monitor.joinable()){
+        monitor.join();
+    }
+
 }
