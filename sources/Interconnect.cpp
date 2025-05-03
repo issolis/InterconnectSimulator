@@ -9,6 +9,7 @@ Interconnect::Interconnect(InstructionList& stack, InstructionList& writeCacheSt
     this->writeCacheStack = &writeCacheStack;
     this->sharedMemory = new SharedMemory();
     this->responseStack = &responseStack;
+    this->schedulingPolicy = 0; 
     startSnooping(); 
 }
 
@@ -29,8 +30,14 @@ struct thread_context {
 void Interconnect::receiveMessage( ){ 
     std::lock_guard<std::mutex> stack_lock(stack_mutex);
     if (strcmp(stack->executeStackOperation(3, "NOINSTR"), "notnull") == 0) {
-        char* instr = stack->executeStackOperation(4, "NOINSTR"); 
-        stack->executeStackOperation(2, "NOINSTR"); 
+        char* instr; 
+        if (schedulingPolicy == 0){
+            instr = stack->executeStackOperation(4, "NOINSTR");
+            stack->executeStackOperation(2, "NOINSTR");
+        }else{
+            instr = stack->executeStackOperation(6, "NOINSTR"); 
+        }
+         
         
         std::string strInstr(instr);
         std::string writeInstr = strInstr.substr(0, 9); 
