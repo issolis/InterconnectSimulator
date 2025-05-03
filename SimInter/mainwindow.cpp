@@ -41,37 +41,69 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->PEComboBox->setCurrentIndex(0);
 
+
+    QStringList headers;
+    headers << "Bloque" << "Valor" << "Estado";
+    ui->MemoryStateTable->setColumnCount(3);
+    ui->MemoryStateTable->setHorizontalHeaderLabels(headers);
+    ui->SharedMemStateTable->setColumnCount(3);
+    ui->SharedMemStateTable->setHorizontalHeaderLabels(headers);
+
+
     for(int i = 0; i < 128; i++){
         ui->MemoryStateTable->insertRow(i);
         ui->SharedMemStateTable->insertRow(i);
-        //qDebug() << this->int_to_hex(i);
         QString hexValue = QString("0x").append(this->int_to_hex(i));
         this->addItemToTable(ui->MemoryStateTable, hexValue, i, 0);
-        this->addItemToTable(ui->MemoryStateTable, QString("VALID"), i, 1);
         this->addItemToTable(ui->SharedMemStateTable, hexValue, i, 0);
-        this->addItemToTable(ui->SharedMemStateTable, QString("VALID"), i, 1);
+        this->addItemToTable(ui->MemoryStateTable, QString("VALID"), i, 2);
+        this->addItemToTable(ui->SharedMemStateTable, QString("VALID"), i , 2);
     }
 
     for(int i = 128; i < 4096; i++){
         ui->SharedMemStateTable->insertRow(i);
         QString hexValue = QString("0x").append(this->int_to_hex(i));
         this->addItemToTable(ui->SharedMemStateTable, hexValue, i, 0);
-        this->addItemToTable(ui->SharedMemStateTable, QString("VALID"), i, 1);
+        this->addItemToTable(ui->SharedMemStateTable, QString("VALID"), i, 2);
     }
 
     this->changeTable(0);
-
 
     //Set up del principal
 
     this->timerSteps = new QTimer(this);
     connect(this->timerSteps, &QTimer::timeout, this, &MainWindow::checkStepperExecution);
-
+    connect(ui->TimeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeStepTime(int)));
     connect(ui->PEComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeTable(int)));
     connect(ui->actionNextView, &QAction::triggered, this, &MainWindow::onActionNextViewTriggered);
     connect(ui->actionPreviousView, &QAction::triggered, this, &MainWindow::onActionPreviousViewTriggered);
     connect(ui->actionPlay, &QAction::triggered, this, &MainWindow::onActionPlayTriggered);
     connect(ui->actionStep, &QAction::triggered, this, &MainWindow::onActionStepTriggered);
+    connect(ui->actionRestart, &QAction::triggered, this, &MainWindow::onActionRestartTriggered);
+    connect(ui->actionPause, &QAction::triggered, this, &MainWindow::onActionPauseTriggered);
+    for(int i = 0; i < 10; i++){
+        limitIndex[i] = 0;
+    }
+}
+
+void MainWindow::changeStepTime(int index){
+    switch(index){
+        case 0:
+            stepDuration = 300;
+            break;
+        case 1:
+            stepDuration = 500;
+            break;
+        case 2:
+            stepDuration = 1000;
+            break;
+        case 3:
+            stepDuration = 3000;
+            break;
+        case 4:
+            stepDuration = 5000;
+            break;
+    }
 }
 
 void MainWindow::checkStepperExecution(){
@@ -79,24 +111,63 @@ void MainWindow::checkStepperExecution(){
         this->paso++;
         this->executeSingleStep();
     }else{
-        this->finishedExecution = true;
+        executionState = 4;
         this->timerSteps->stop();
-
+        ui->StateLabel->setText(QString("Finalizado"));
     }
+}
+
+void MainWindow::resetExecution(){
+    executionState = 1;
+    this->paso = 1;
+    if(stepChanges->getMarkedBlocksList()->getLength() > 0){
+        for(int i = 0; i < stepChanges->getMarkedBlocksList()->getLength(); i++){
+            int block = stepChanges->getMarkedBlocksList()->getSlotByIndex(i)->getBlock();
+            ui->MemoryStateTable->item(block, 2)->setText("VALID");
+        }
+        stepChanges->returnHome();
+    }
+    ui->StateLabel->setText(QString("Ejecutando"));
 }
 
 void MainWindow::onActionPlayTriggered(){
-    if(!hasRunController){
+    if(executionState == 4 || executionState < 2){
+        if(executionState == 0){
+            this->executeStepsInController();
+        }
+        if(executionState == 4){
+            this->resetExecution();
+        }
+        executionState = 2;
+        this->executeSingleStep();
+    }else if(executionState==3){
+        executionState = 2;
+        this->timerSteps->start(stepDuration);
+    }
+    ui->StateLabel->setText(QString("Ejecutando"));
+}
+
+void MainWindow::onActionRestartTriggered(){
+    if(executionState == 0){
         this->executeStepsInController();
     }
-    if(this->finishedExecution){
-        this->finishedExecution = false;
-        this->paso = 1;
+    if(executionState == 2){
+        this->timerSteps->stop();
     }
-
+    this->resetExecution();
+    executionState = 2;
     this->executeSingleStep();
-
 }
+
+void MainWindow::onActionPauseTriggered(){
+
+    if(executionState == 2){
+        this->timerSteps->stop();
+        executionState = 3;
+        ui->StateLabel->setText(QString("Pausa"));
+    }
+}
+
 
 void MainWindow::executeSingleStep(){
     QString InstructionsInThisStep = QString("");
@@ -106,11 +177,20 @@ void MainWindow::executeSingleStep(){
     }
     ui->ExeOutputTE->setText(InstructionsInThisStep);
     ui->PasoLabel->setText(QString("Paso: ").append(std::to_string(this->paso)));
-    this->timerSteps->start(1000);
+    SlotsList * slot;
+    slot = stepChanges->getCurrent();
+    if(slot->getLength() > 0){
+        for(int i = 0; i < slot->getLength(); i++){
+            int block = slot->getSlotByIndex(i)->getBlock();
+            ui->MemoryStateTable->item(block, 2)->setText("INVALID");
+        }
+    }
+    stepChanges->moveRight();
+    this->timerSteps->start(stepDuration);
 }
 
 void MainWindow::onActionStepTriggered(){
-    if(!hasRunController){
+    if(executionState == 0){
         this->executeStepsInController();
     }
     if(paso < 10){
@@ -125,7 +205,7 @@ void MainWindow::executeStepsInController(){
     ProcessorController* controller = new ProcessorController(*(this->workers));
     int instNum = 0;
     for(int i = 1; i < 11; i++){
-
+        //Instructions text
         InstructionList * stepList = controller->step(i);
         Instruction * curr = stepList->head;
 
@@ -139,6 +219,23 @@ void MainWindow::executeStepsInController(){
         fullResponseStack->addInstr(*newInstructionAdded);
         instNum++;
         limitIndex[i] = instNum;
+
+        //Cache state
+        SlotsList * slotThisStep = new SlotsList();
+        stepChanges->addStep(slotThisStep);
+        for(int proc = 0; proc < 8; proc++){
+            for(int j = 0; j < 128; j++){
+                std::string state = controller->processors[proc].cacheMemory->cacheState[j];
+                if(state == "INVALID"){
+                    if(!stepChanges->getMarkedBlocksList()->isBlockPresent(j)){
+                        stepChanges->getMarkedBlocksList()->addSlot(j);
+                        slotThisStep->addSlot(j);
+                    }
+                }
+            }
+
+        }
+
     }
 
 }
@@ -164,12 +261,14 @@ MainWindow::~MainWindow()
     }
     delete workers;
     delete fullResponseStack;
+    delete stepChanges;
+    delete[] limitIndex;
 }
 
 void MainWindow::changeTable(int index){
-    int memoryBlocks = 128;
+    //int memoryBlocks = 128;
     if(index == 0){
-        memoryBlocks = 4096;
+        //memoryBlocks = 4096;
         ui->MemoryStateTable->setVisible(false);
         ui->SharedMemStateTable->setVisible(true);
     }else{

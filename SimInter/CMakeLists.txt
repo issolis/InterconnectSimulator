@@ -40,6 +40,11 @@ qt_add_executable(SimInter
     Processor/sources/ProcessorRead.cpp
     Processor/sources/ProcessorWrite.cpp
     Processor/sources/SharedMemory.cpp
+    slotinvalidated.h slotinvalidated.cpp
+    slotslist.h slotslist.cpp
+    stepchanges.h stepchanges.cpp
+
+
 )
 
 target_link_libraries(SimInter

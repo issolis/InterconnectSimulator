@@ -8,7 +8,7 @@
 #include <thread>
 #include <QTimer>
 #include "./Processor/headers/InstructionList.h"
-#include "./Processor/headers/Instruction.h"
+#include "stepchanges.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -34,6 +34,9 @@ private slots:
     void onActionPlayTriggered();
     void onActionStepTriggered();
     void checkStepperExecution();
+    void onActionRestartTriggered();
+    void onActionPauseTriggered();
+    void changeStepTime(int index);
 
 private:
     Ui::MainWindow *ui;
@@ -46,7 +49,7 @@ private:
     void showCurrentPage();
     bool saveFile(int peNum);
     QTimer * timerSteps;
-
+    void resetExecution();
 
     std::string int_to_hex(int decimal);
     void addItemToTable(QTableWidget * table ,QString text, int row, int column);
@@ -54,13 +57,25 @@ private:
     //Workers del procesador:
     std::vector<std::thread>* workers = new std::vector<std::thread>();
     int paso = 1;
-    bool hasRunController = false;
-    bool finishedExecution = false;
+    int executionState = 0;
+    /* Execution States:
+     * 0: Hasn't run the controller
+     * 1: Has run the controller (HRTC) - is not playing
+     * 2: HRTC - is playing
+     * 3: HRTC - is paused
+     * 4: HRTC - has finished
+    */
     void executeStepsInController();
     void executeSingleStep();
 
     //Stack de respuestas
     InstructionList * fullResponseStack = new InstructionList();
-    int limitIndex [10] = {0,0,0,0,0,0,0,0,0,0};
+    int * limitIndex = new int[10];
+
+    //Lista de Invalidación
+    StepChanges * stepChanges = new StepChanges();
+
+    int stepDuration = 300;
+
 };
 #endif // MAINWINDOW_H
