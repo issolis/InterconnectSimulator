@@ -204,6 +204,22 @@ void MainWindow::onActionStepTriggered(){
 void MainWindow::executeStepsInController(){
     ProcessorController* controller = new ProcessorController(*(this->workers));
     int instNum = 0;
+    //Obtener todos los valores de los bloques en los procesadores
+    for(int i = 0; i < 8; i++){
+        for(int j = 0; j < 128; j++){
+            caches[j + 128*i] = controller->processors[i].cacheMemory->cache[j];
+        }
+    }
+    int tableToPrint = 0;
+    if(ui->PEComboBox->currentIndex() > 1){
+        tableToPrint = ui->PEComboBox->currentIndex()-1;
+    }
+
+    for(int i = 0; i < 128; i++){
+        QString value = QString("").append(std::to_string(caches[i + 128*tableToPrint]));
+        this->addItemToTable(ui->MemoryStateTable,value, i, 1);
+    }
+
     for(int i = 1; i < 11; i++){
         //Instructions text
         InstructionList * stepList = controller->step(i);
@@ -266,7 +282,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::changeTable(int index){
-    //int memoryBlocks = 128;
+    int memoryBlocks = 128;
     if(index == 0){
         //memoryBlocks = 4096;
         ui->MemoryStateTable->setVisible(false);
@@ -275,7 +291,13 @@ void MainWindow::changeTable(int index){
         ui->MemoryStateTable->setVisible(true);
         ui->SharedMemStateTable->setVisible(false);
     }
+    if(executionState != 0){
 
+        for(int i = 0; i < memoryBlocks; i++){
+            QString value = QString("").append(std::to_string(caches[i + 128*(index-1)]));
+            ui->MemoryStateTable->item(i, 1)->setText(value);
+        }
+    }
 
 }
 

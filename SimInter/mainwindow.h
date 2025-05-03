@@ -77,5 +77,7 @@ private:
 
     int stepDuration = 300;
 
+    uint16_t caches[128*8];
+
 };
 #endif // MAINWINDOW_H
