@@ -15,9 +15,9 @@ int main() {
     ProcessorController* controller = new ProcessorController(*workers);
 
 
-    controller->interconnectBus->schedulingPolicy = 0; 
+    controller->interconnectBus->schedulingPolicy = 1; 
     
-    for(int i = 1; i < 10; i++) {
+    for(int i = 1; i < 11; i++) {
         controller->step(i);
     }
 

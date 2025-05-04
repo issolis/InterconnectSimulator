@@ -63,9 +63,9 @@ void Interconnect::receiveMessage( ){
 
 
             //std::cout << "Data written to address " << address << ": " << data << std::endl;
-            sharedMemory->setSharedMemory(address, data);
+            std::string response =  std::to_string(sharedMemory->setSharedMemory(address, data));
 
-            std::string dataResp = "WRITE_RESP " + src + ", 0x1" + ", " + QoS;
+            std::string dataResp = "WRITE_RESP " + src + ", " + response + ", 0x1" + ", " + QoS;
 
             for (int i = 0; i < 8; i++){
                 if (src == std::to_string(i)){

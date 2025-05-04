@@ -180,10 +180,11 @@ Instruction* InstructionList::getByPriority(){
         if (currentInstr->QoS > maxQoSInstr->QoS){
             maxQoSInstr = currentInstr; 
         }
+       // std::cout << "currentInstr: " << currentInstr->getInstr() << std::endl;
         currentInstr = currentInstr->getNextInstr(); 
 
     }
-    std::cout << "maxQoSInstr: " << maxQoSInstr->getInstr() << std::endl;
+   // std::cout << "maxQoSInstr: " << maxQoSInstr->getInstr() << std::endl;
    
     return maxQoSInstr;
 }
