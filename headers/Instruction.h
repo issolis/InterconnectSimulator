@@ -14,6 +14,7 @@ class Instruction
         void setNextInstr(Instruction* next); 
         Instruction* getNextInstr(); 
         std::string getInstr(); 
+        int QoS; 
 
 };
 

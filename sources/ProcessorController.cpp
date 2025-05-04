@@ -60,6 +60,12 @@ int ProcessorController::step(int step){
     }   
     std::cout << "_________________________________" << std::endl;
 
+    std::cout << "caches" << std::endl;
+    for (int i = 0; i < 17; i++) {
+        std::cout << "Cache " << 1 << " " << i << ": " << processors[1].processorCache->cacheMemory->cacheState[i] << std::endl;
+    }
+    std::cout << "_________________________________" << std::endl;
+
 
     return 1; 
 

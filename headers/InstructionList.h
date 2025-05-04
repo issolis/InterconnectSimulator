@@ -22,8 +22,15 @@ class InstructionList
         std::mutex listMutex; 
         
         void addInstr(std::string &instr);
+        void addIntrIntStack(std::string &instr);
         void popInstr(); 
         void showStack();
+        void deleteInstr(Instruction* instr);
+        
+        Instruction* getByPriority(); 
+
+        int getQoS(std::string instr);
+
 
         char* executeStackOperation(int op, std::string instr);
         InstructionList* copy();
