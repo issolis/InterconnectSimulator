@@ -13,6 +13,7 @@
 #include <QtCharts/QChartView>
 #include "./Processor/headers/InstructionList.h"
 #include "stepchanges.h"
+#include "./Processor/headers/ProcessorController.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -60,6 +61,7 @@ private:
     void addItemToTable(QTableWidget * table ,QString text, int row, int column);
 
     //Workers del procesador:
+    ProcessorController* controller;
     std::vector<std::thread>* workers = new std::vector<std::thread>();
     int paso = 1;
     int executionState = 0;
@@ -86,13 +88,22 @@ private:
 
 
 
-    //Elementos para la gráfica
+    //Elementos para la gráfica de tiempo
     long exeDurations [10];
     QLineSeries * series = new QLineSeries();
     QChart * chart = new QChart();
     QChartView * chartView = new QChartView();
     long getLongestDuration();
     long getShortestDuration();
+
+
+    //Elementos para la gráfica de escritura
+    QLineSeries * seriesWrite = new QLineSeries();
+    QChart * chartWrite = new QChart();
+    QChartView * chartViewWrite = new QChartView();
+
+    void setChartOnLayout(QChart * chartSet, QChartView * chartVSet, QVBoxLayout * chartLayout);
+    void generalChartSettings(QChart * chartSet, QLineSeries * seriesSet, QString chartTitle, QString yAxisTitle, QString xAxisTitle);
     QVBoxLayout * graphLayout = new QVBoxLayout();
 };
 #endif // MAINWINDOW_H

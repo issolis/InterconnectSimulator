@@ -206,8 +206,6 @@ void MainWindow::executeSingleStep(){
     if(slot->getChanges() > 0){
         for(int i = 0; i < slot->getChanges(); i++){
             MemoryChange * change = slot->getChangeByIndex(i);
-            //qDebug() << change;
-            //qDebug() << change->getBlockUpdated() << ": " << change->getNewValue();
             ui->SharedMemStateTable->item(change->getBlockUpdated(), 1)->setText(QString("").append(std::to_string(change->getNewValue())));
         }
     }
@@ -234,7 +232,7 @@ void MainWindow::executeStepsInController(){
         filePaths[i] = (rootPath.append("/InstructionsP").append(std::to_string(i + 1)).append(".txt")).toStdString();
     }
 
-    ProcessorController* controller = new ProcessorController(*(this->workers), filePaths);
+    controller = new ProcessorController(*(this->workers), filePaths);
     int instNum = 0;
     //Obtener todos los valores de los bloques en los procesadores
     for(int i = 0; i < 8; i++){
@@ -310,24 +308,34 @@ void MainWindow::executeStepsInController(){
         series->append(i, exeDurations[i-1]);
     }
 
-    chart->setTitle(QString("Duración de cada paso"));
 
-    chart->legend()->hide();
-    chart->addSeries(series);
-    chart->createDefaultAxes();
+    //Chart para tiempo
+
+    generalChartSettings(chart, series, QString("Duración de cada paso"), QString("Tiempo de ejecución (μs)"),QString("Instrucción"));
+
     QVariant min = QVariant::fromValue(getShortestDuration());
     long longest = getLongestDuration();
     QVariant max = QVariant::fromValue(longest+longest/10);
     chart->axes(Qt::Vertical).first()->setRange(min, max);
-    chart->axes(Qt::Vertical).first()->setTitleText("Tiempo de ejecución (μs)");
-    chart->axes(Qt::Horizontal).first()->setRange(0,11);
-    chart->axes(Qt::Horizontal).first()->setTitleText("Instrucción");
-    chart->setVisible(true);
 
-    chartView->setChart(chart);
-    chartView->setRenderHint(QPainter::Antialiasing);
-    chartView->setVisible(true);
-    graphLayout->addWidget(chartView);
+
+    setChartOnLayout(chart, chartView, graphLayout);
+
+    //Chart para escritura
+    int maxValue = 0;
+    for(int i = 1; i < stepChanges->getLength() + 1; i++){
+        int changesMade = stepChanges->getCurrent()->getChanges()*4;
+        if(changesMade > maxValue){
+            maxValue = changesMade;
+        }
+        seriesWrite->append(i, changesMade);
+        stepChanges->moveRight();
+    }
+    stepChanges->returnHome();
+    generalChartSettings(chartWrite, seriesWrite, QString("Bytes por paso"), QString("Bytes escritos"),QString("Instrucción"));
+    chartWrite->axes(Qt::Vertical).first()->setRange(0, maxValue + maxValue/2);
+    setChartOnLayout(chartWrite, chartViewWrite, graphLayout);
+
     ui->pageGraph->setLayout(graphLayout);
 }
 
@@ -351,6 +359,24 @@ long MainWindow::getShortestDuration(){
     return min;
 }
 
+void MainWindow::generalChartSettings(QChart * chartSet, QLineSeries * seriesSet, QString chartTitle, QString yAxisTitle, QString xAxisTitle){
+    chartSet->setTitle(chartTitle);
+    chartSet->legend()->hide();
+    chartSet->addSeries(seriesSet);
+    chartSet->createDefaultAxes();
+    chartSet->axes(Qt::Vertical).first()->setTitleText(yAxisTitle);
+    chartSet->axes(Qt::Horizontal).first()->setRange(0,11);
+    chartSet->axes(Qt::Horizontal).first()->setTitleText(xAxisTitle);
+    chartSet->setVisible(true);
+}
+
+void MainWindow::setChartOnLayout(QChart * chartSet, QChartView * chartVSet, QVBoxLayout * chartLayout){
+    chartVSet->setChart(chartSet);
+    chartVSet->setRenderHint(QPainter::Antialiasing);
+    chartVSet->setVisible(true);
+    chartLayout->addWidget(chartVSet);
+}
+
 std::string MainWindow::int_to_hex(int decimal) {
     std::stringstream ss;
     ss << std::hex << std::uppercase << decimal;
@@ -370,13 +396,18 @@ MainWindow::~MainWindow()
         delete PETabs[i];
         delete PETextEdits[i];
     }
+    delete controller;
     delete workers;
     delete fullResponseStack;
     delete stepChanges;
     delete[] limitIndex;
     delete series;
     delete chart;
+    delete chartView;
     delete graphLayout;
+    delete seriesWrite;
+    delete chartWrite;
+    delete chartViewWrite;
 }
 
 void MainWindow::changeTable(int index){
