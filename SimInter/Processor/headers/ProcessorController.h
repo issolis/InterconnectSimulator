@@ -15,9 +15,9 @@
 
 class ProcessorController{
 
-    public: 
+    public:
 
-        ProcessorController(std::vector<std::thread>& workers);
+        ProcessorController(std::vector<std::thread>& workers, std::string pathFiles[8]);
         ~ProcessorController();
         InstructionList * step(int step);
         int previous = 0;
@@ -31,9 +31,7 @@ class ProcessorController{
         std::vector<ProcessorRead> processorsRead;
         std::vector<Processor> processors;
         std::vector<InstructionList> readStacks;
-        std::string paths[8] = {"../../InstructionsFile/InstructionsP1.txt", "../../InstructionsFile/InstructionsP2.txt", "../../InstructionsFile/InstructionsP3.txt",
-            "../../InstructionsFile/InstructionsP4.txt", "../../InstructionsFile/InstructionsP5.txt", "../../InstructionsFile/InstructionsP6.txt", "../../InstructionsFile/InstructionsP7.txt",
-            "../../InstructionsFile/InstructionsP8.txt"};
+        std::string paths[8];
 
         List *readStackList = new List();
         List *readCacheStackList = new List();

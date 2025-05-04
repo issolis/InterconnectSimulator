@@ -7,9 +7,14 @@ class StepChanges
 private:
     SlotsList * head = nullptr;
     SlotsList * currentStep = nullptr;
-    SlotsList * markedBlocks = new SlotsList();
     int * length = new int(0);
     int position = 0;
+
+    //Slots invalidados
+    SlotsList * markedBlocks = new SlotsList();
+
+    //Cambios en Memoria Compartida
+    SlotsList * memoryBlocksUpdated = new SlotsList();
 
 public:
     StepChanges();
@@ -17,13 +22,13 @@ public:
     int getLength(){return *length;}
     void addStep(SlotsList * slotList);
     bool blockIsMarked(int block);
-    void markBlock(int block);
     SlotsList * getCurrent(){return currentStep;}
     SlotsList * moveRight();
     SlotsList * moveLeft();
     SlotsList * returnHome();
     SlotsList * getMarkedBlocksList(){return markedBlocks;}
 
+    SlotsList * getMemoryBlocksUpdated(){return memoryBlocksUpdated;}
 };
 
 #endif // STEPCHANGES_H

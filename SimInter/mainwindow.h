@@ -7,8 +7,13 @@
 #include <vector>
 #include <thread>
 #include <QTimer>
+#include <QLayout>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QChart>
+#include <QtCharts/QChartView>
 #include "./Processor/headers/InstructionList.h"
 #include "stepchanges.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -42,7 +47,7 @@ private:
     Ui::MainWindow *ui;
     QWidget * PETabs [8];
     QTextEdit * PETextEdits[8];
-    QString path;
+    QString path = QString("/home/alexis/Documents/Tec/Arqui_2/InterconnectSimulator/SimInter/InstructionsFile");
     void cargarArchivosMemoria(QString path);
     int openDialog(QString title, QString text, int type);
     int current_page = 1;
@@ -79,5 +84,15 @@ private:
 
     uint16_t caches[128*8];
 
+
+
+    //Elementos para la gráfica
+    long exeDurations [10];
+    QLineSeries * series = new QLineSeries();
+    QChart * chart = new QChart();
+    QChartView * chartView = new QChartView();
+    long getLongestDuration();
+    long getShortestDuration();
+    QVBoxLayout * graphLayout = new QVBoxLayout();
 };
 #endif // MAINWINDOW_H

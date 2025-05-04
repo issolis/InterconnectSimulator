@@ -4,6 +4,7 @@ StepChanges::StepChanges() {}
 
 StepChanges::~StepChanges(){
     delete markedBlocks;
+    delete memoryBlocksUpdated;
     delete length;
 }
 

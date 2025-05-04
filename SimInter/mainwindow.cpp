@@ -9,7 +9,10 @@
 #include <QStyleFactory>
 #include <fstream>
 #include <sstream>
+#include <chrono>
 #include "./Processor/headers/ProcessorController.h"
+
+using namespace std::chrono;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -46,7 +49,8 @@ MainWindow::MainWindow(QWidget *parent)
     headers << "Bloque" << "Valor" << "Estado";
     ui->MemoryStateTable->setColumnCount(3);
     ui->MemoryStateTable->setHorizontalHeaderLabels(headers);
-    ui->SharedMemStateTable->setColumnCount(3);
+    headers << "Bloque" << "Valor";
+    ui->SharedMemStateTable->setColumnCount(2);
     ui->SharedMemStateTable->setHorizontalHeaderLabels(headers);
 
 
@@ -57,14 +61,14 @@ MainWindow::MainWindow(QWidget *parent)
         this->addItemToTable(ui->MemoryStateTable, hexValue, i, 0);
         this->addItemToTable(ui->SharedMemStateTable, hexValue, i, 0);
         this->addItemToTable(ui->MemoryStateTable, QString("VALID"), i, 2);
-        this->addItemToTable(ui->SharedMemStateTable, QString("VALID"), i , 2);
+        this->addItemToTable(ui->SharedMemStateTable, QString("0"), i, 1);
     }
 
     for(int i = 128; i < 4096; i++){
         ui->SharedMemStateTable->insertRow(i);
         QString hexValue = QString("0x").append(this->int_to_hex(i));
         this->addItemToTable(ui->SharedMemStateTable, hexValue, i, 0);
-        this->addItemToTable(ui->SharedMemStateTable, QString("VALID"), i, 2);
+        this->addItemToTable(ui->SharedMemStateTable, QString("0"), i, 1);
     }
 
     this->changeTable(0);
@@ -125,42 +129,56 @@ void MainWindow::resetExecution(){
             int block = stepChanges->getMarkedBlocksList()->getSlotByIndex(i)->getBlock();
             ui->MemoryStateTable->item(block, 2)->setText("VALID");
         }
-        stepChanges->returnHome();
     }
+    if(stepChanges->getMemoryBlocksUpdated()->getLength() > 0){
+        qDebug() << "Length: " << stepChanges->getMemoryBlocksUpdated()->getLength();
+        for(int i = 0; i < stepChanges->getMemoryBlocksUpdated()->getLength(); i++){
+            int block = stepChanges->getMemoryBlocksUpdated()->getSlotByIndex(i)->getBlock();
+            ui->SharedMemStateTable->item(block, 1)->setText(QString("0"));
+        }
+    }
+    stepChanges->returnHome();
     ui->StateLabel->setText(QString("Ejecutando"));
 }
 
 void MainWindow::onActionPlayTriggered(){
-    if(executionState == 4 || executionState < 2){
-        if(executionState == 0){
-            this->executeStepsInController();
+    if(this->path.length() > 0){
+        if(executionState == 4 || executionState < 2){
+            if(executionState == 0){
+                this->executeStepsInController();
+            }
+            if(executionState == 4){
+                this->resetExecution();
+            }
+            executionState = 2;
+            this->executeSingleStep();
+        }else if(executionState==3){
+            executionState = 2;
+            this->timerSteps->start(stepDuration);
         }
-        if(executionState == 4){
-            this->resetExecution();
-        }
-        executionState = 2;
-        this->executeSingleStep();
-    }else if(executionState==3){
-        executionState = 2;
-        this->timerSteps->start(stepDuration);
+        ui->StateLabel->setText(QString("Ejecutando"));
+    }else{
+        openDialog(QString("Error"), QString("No hay instrucciones para ejecutar"), 1);
     }
-    ui->StateLabel->setText(QString("Ejecutando"));
 }
 
 void MainWindow::onActionRestartTriggered(){
-    if(executionState == 0){
-        this->executeStepsInController();
+    if(this->path.length() > 0){
+        if(executionState == 0){
+            this->executeStepsInController();
+        }
+        if(executionState == 2){
+            this->timerSteps->stop();
+        }
+        this->resetExecution();
+        executionState = 2;
+        this->executeSingleStep();
+    }else{
+        openDialog(QString("Error"), QString("No hay instrucciones cargadas para ejecutar"), 1);
     }
-    if(executionState == 2){
-        this->timerSteps->stop();
-    }
-    this->resetExecution();
-    executionState = 2;
-    this->executeSingleStep();
 }
 
 void MainWindow::onActionPauseTriggered(){
-
     if(executionState == 2){
         this->timerSteps->stop();
         executionState = 3;
@@ -185,6 +203,14 @@ void MainWindow::executeSingleStep(){
             ui->MemoryStateTable->item(block, 2)->setText("INVALID");
         }
     }
+    if(slot->getChanges() > 0){
+        for(int i = 0; i < slot->getChanges(); i++){
+            MemoryChange * change = slot->getChangeByIndex(i);
+            //qDebug() << change;
+            //qDebug() << change->getBlockUpdated() << ": " << change->getNewValue();
+            ui->SharedMemStateTable->item(change->getBlockUpdated(), 1)->setText(QString("").append(std::to_string(change->getNewValue())));
+        }
+    }
     stepChanges->moveRight();
     this->timerSteps->start(stepDuration);
 }
@@ -202,7 +228,13 @@ void MainWindow::onActionStepTriggered(){
 }
 
 void MainWindow::executeStepsInController(){
-    ProcessorController* controller = new ProcessorController(*(this->workers));
+    std::string filePaths [8];
+    for(int i = 0; i < 8; i++){
+        QString rootPath = this->path;
+        filePaths[i] = (rootPath.append("/InstructionsP").append(std::to_string(i + 1)).append(".txt")).toStdString();
+    }
+
+    ProcessorController* controller = new ProcessorController(*(this->workers), filePaths);
     int instNum = 0;
     //Obtener todos los valores de los bloques en los procesadores
     for(int i = 0; i < 8; i++){
@@ -220,9 +252,16 @@ void MainWindow::executeStepsInController(){
         this->addItemToTable(ui->MemoryStateTable,value, i, 1);
     }
 
+    //Ejecución de cada paso
     for(int i = 1; i < 11; i++){
-        //Instructions text
+
+        auto start = high_resolution_clock::now();
         InstructionList * stepList = controller->step(i);
+        auto finish = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(finish - start);
+
+        exeDurations[i-1] = duration.count();
+
         Instruction * curr = stepList->head;
 
         while(curr->getNextInstr() != nullptr){
@@ -249,11 +288,67 @@ void MainWindow::executeStepsInController(){
                     }
                 }
             }
-
         }
 
+        //Shared Memory Values
+        std::vector<uint32_t> * initialShared = controller->interconnectBus->sharedMemory->sharedMemory;
+        for (size_t k = 0; k < initialShared->size(); k++) {
+            uint32_t value = (*initialShared)[k];
+            if(value != 0){
+                //qDebug() << "Non zero: " << k << ","<< value;
+                if(!stepChanges->getMemoryBlocksUpdated()->isBlockPresent(k)){
+                    stepChanges->getMemoryBlocksUpdated()->addSlot(k);
+                    //qDebug() << "Different: " << k << ","<< value;
+                }
+                slotThisStep->addChange(k, value);
+            }
+        }
     }
 
+    //Setea la gráfica
+    for(int i = 1; i < 11; i++){
+        series->append(i, exeDurations[i-1]);
+    }
+
+    chart->setTitle(QString("Duración de cada paso"));
+
+    chart->legend()->hide();
+    chart->addSeries(series);
+    chart->createDefaultAxes();
+    QVariant min = QVariant::fromValue(getShortestDuration());
+    long longest = getLongestDuration();
+    QVariant max = QVariant::fromValue(longest+longest/10);
+    chart->axes(Qt::Vertical).first()->setRange(min, max);
+    chart->axes(Qt::Vertical).first()->setTitleText("Tiempo de ejecución (μs)");
+    chart->axes(Qt::Horizontal).first()->setRange(0,11);
+    chart->axes(Qt::Horizontal).first()->setTitleText("Instrucción");
+    chart->setVisible(true);
+
+    chartView->setChart(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+    chartView->setVisible(true);
+    graphLayout->addWidget(chartView);
+    ui->pageGraph->setLayout(graphLayout);
+}
+
+long MainWindow::getLongestDuration(){
+    long max = 0;
+    for(int i = 0; i < 10; i++){
+        if(exeDurations[i] > max){
+            max = exeDurations[i];
+        }
+    }
+    return max;
+}
+
+long MainWindow::getShortestDuration(){
+    long min = LONG_MAX;
+    for(int i = 0; i < 10; i++){
+        if(exeDurations[i] < min){
+            min = exeDurations[i];
+        }
+    }
+    return min;
 }
 
 std::string MainWindow::int_to_hex(int decimal) {
@@ -279,6 +374,9 @@ MainWindow::~MainWindow()
     delete fullResponseStack;
     delete stepChanges;
     delete[] limitIndex;
+    delete series;
+    delete chart;
+    delete graphLayout;
 }
 
 void MainWindow::changeTable(int index){
@@ -366,6 +464,7 @@ void MainWindow::onActionSaveAllPEsTriggered()
 
 void MainWindow::onActionCargarMemoriasTriggered(){
     this->path = QFileDialog::getExistingDirectory(this, QString("Seleccione la carpeta con Instrucciones"), QDir::currentPath());
+    //qDebug() << this->path;
     this->cargarArchivosMemoria(this->path);
 }
 

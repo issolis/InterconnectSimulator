@@ -2,7 +2,11 @@
 #include "../../Processor/headers/ProcessorController.h"
 #include <QDebug>
 
-ProcessorController::ProcessorController(std::vector<std::thread> &workers) {
+ProcessorController::ProcessorController(std::vector<std::thread> &workers, std::string pathFiles[8]) {
+    for(int i = 0; i < 8; i++){
+        paths[i] = pathFiles[i];
+    }
+
     writeStack = new InstructionList();
     writeCacheStack = new InstructionList();
     responsesStack = new InstructionList();

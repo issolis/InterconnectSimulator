@@ -4,7 +4,7 @@ project(SimInter LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Charts)
 
 qt_standard_project_setup()
 
@@ -43,6 +43,7 @@ qt_add_executable(SimInter
     slotinvalidated.h slotinvalidated.cpp
     slotslist.h slotslist.cpp
     stepchanges.h stepchanges.cpp
+    memorychange.h memorychange.cpp
 
 
 )
@@ -51,6 +52,7 @@ target_link_libraries(SimInter
     PRIVATE
         Qt::Core
         Qt::Widgets
+        Qt::Charts
 )
 
 include(GNUInstallDirs)

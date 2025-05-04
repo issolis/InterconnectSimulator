@@ -170,11 +170,6 @@
         <string>Valor</string>
        </property>
       </column>
-      <column>
-       <property name="text">
-        <string>Estado</string>
-       </property>
-      </column>
      </widget>
      <widget class="QLabel" name="PasoLabel">
       <property name="geometry">
@@ -260,6 +255,7 @@
       </item>
      </widget>
     </widget>
+    <widget class="QWidget" name="pageGraph"/>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -475,7 +471,7 @@
     <string>Vista Siguiente</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Right</string>
+    <string>Right</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
@@ -489,7 +485,7 @@
     <string>Vista Anterior</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Left</string>
+    <string>Left</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>

@@ -1,12 +1,17 @@
 #ifndef SLOTSLIST_H
 #define SLOTSLIST_H
 #include "slotinvalidated.h"
+#include "memorychange.h"
 #include <QDebug>
 class SlotsList
 {
 private:
     int length = 0;
     SlotInvalidated * head = nullptr;
+
+    int changesMade = 0;
+    MemoryChange * headMC = nullptr;
+
     SlotsList * next = nullptr;
     SlotsList * previous = nullptr;
 
@@ -22,6 +27,12 @@ public:
     void setPrevious(SlotsList * slot){previous = slot;}
     bool isBlockPresent(int block);
     void print();
+
+    //MemoryChanges
+    int getChanges(){return changesMade;}
+    void addChange(int block, uint32_t value);
+    MemoryChange * getChangeByIndex(int index);
+
 };
 
 #endif // SLOTSLIST_H

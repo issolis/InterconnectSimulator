@@ -4,6 +4,7 @@ SlotsList::SlotsList() {}
 
 SlotsList::~SlotsList(){
     delete head;
+    delete headMC;
 }
 
 void SlotsList::addSlot(int block){
@@ -20,11 +21,43 @@ void SlotsList::addSlot(int block){
     length++;
 }
 
+void SlotsList::addChange(int block, uint32_t value){
+    MemoryChange * newUpdate = new MemoryChange(block, value);
+    //qDebug() << "Pointer: " << newUpdate;
+    if(headMC == nullptr){
+        headMC = newUpdate;
+    }else{
+        MemoryChange * curr = headMC;
+        while(curr->getNext() != nullptr){
+            curr = curr->getNext();
+        }
+        curr->setNext(newUpdate);
+    }
+    changesMade++;
+}
+
 
 SlotInvalidated * SlotsList::getSlotByIndex(int index){
     if(index < length){
         if(length > 0){
             SlotInvalidated * curr = head;
+            for(int i = 0; i < index; i++){
+                curr = curr->getNext();
+            }
+            return curr;
+        }else{
+            return nullptr;
+        }
+    }else{
+        return nullptr;
+    }
+    return nullptr;
+}
+
+MemoryChange * SlotsList::getChangeByIndex(int index){
+    if(index < changesMade){
+        if(changesMade > 0){
+            MemoryChange * curr = headMC;
             for(int i = 0; i < index; i++){
                 curr = curr->getNext();
             }
