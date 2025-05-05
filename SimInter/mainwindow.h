@@ -11,6 +11,7 @@
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
+#include <QActionGroup>
 #include "./Processor/headers/InstructionList.h"
 #include "stepchanges.h"
 #include "./Processor/headers/ProcessorController.h"
@@ -43,6 +44,8 @@ private slots:
     void onActionRestartTriggered();
     void onActionPauseTriggered();
     void changeStepTime(int index);
+    void onActionFIFOTriggered();
+    void onActionPrioridadTriggered();
 
 private:
     Ui::MainWindow *ui;

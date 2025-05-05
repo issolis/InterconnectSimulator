@@ -17,7 +17,7 @@ class ProcessorController{
 
     public:
 
-        ProcessorController(std::vector<std::thread>& workers, std::string pathFiles[8]);
+        ProcessorController(std::vector<std::thread>& workers, std::string pathFiles[8], int scheduling);
         ~ProcessorController();
         InstructionList * step(int step);
         int previous = 0;

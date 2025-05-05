@@ -2,7 +2,7 @@
 #include "../../Processor/headers/ProcessorController.h"
 #include <QDebug>
 
-ProcessorController::ProcessorController(std::vector<std::thread> &workers, std::string pathFiles[8]) {
+ProcessorController::ProcessorController(std::vector<std::thread> &workers, std::string pathFiles[8], int scheduling) {
     for(int i = 0; i < 8; i++){
         paths[i] = pathFiles[i];
     }
@@ -21,7 +21,7 @@ ProcessorController::ProcessorController(std::vector<std::thread> &workers, std:
         readCacheStackList->insertList(i);
     }
 
-    interconnectBus = new Interconnect(*writeStack, *writeCacheStack, *readStackList, *readCacheStackList, *responsesStack);
+    interconnectBus = new Interconnect(*writeStack, *writeCacheStack, *readStackList, *readCacheStackList, *responsesStack, scheduling);
 
     for (int i = 0; i < 8; i++) {
         processors.emplace_back(

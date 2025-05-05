@@ -27,7 +27,6 @@ public:
     SlotsList * moveLeft();
     SlotsList * returnHome();
     SlotsList * getMarkedBlocksList(){return markedBlocks;}
-
     SlotsList * getMemoryBlocksUpdated(){return memoryBlocksUpdated;}
 };
 

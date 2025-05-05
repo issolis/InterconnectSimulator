@@ -92,6 +92,48 @@ bool SlotsList::isBlockPresent(int block){
     return false;
 }
 
+bool SlotsList::hasBlockBeenUpdated(int block){
+    if(changesMade > 0){
+        MemoryChange * curr = headMC;
+        while(curr->getNext() != nullptr){
+            if(curr->getBlockUpdated() == block){
+                return true;
+            }else{
+                curr = curr->getNext();
+            }
+        }
+        if(curr->getBlockUpdated() == block){
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
+    return false;
+}
+
+MemoryChange * SlotsList::findChangeByBlock(int block){
+    if(changesMade > 0){
+        MemoryChange * curr = headMC;
+        while(curr->getNext() != nullptr){
+            if(curr->getBlockUpdated() == block){
+                return curr;
+            }else{
+                curr = curr->getNext();
+            }
+        }
+        if(curr->getBlockUpdated() == block){
+            return curr;
+        }else{
+            return nullptr;
+        }
+    }else{
+        return nullptr;
+    }
+    return nullptr;
+}
+
 void SlotsList::print(){
     qDebug() << "+++++++++++++++++++";
     if(length > 0){

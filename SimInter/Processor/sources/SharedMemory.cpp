@@ -27,7 +27,7 @@ int SharedMemory::fromStrToInt(std::string str){
     
 }
 
-void SharedMemory::setSharedMemory(std::string address, std::string value)
+uint32_t SharedMemory::setSharedMemory(std::string address, std::string value)
 {
     int len = value.length();
     uint32_t values[len/5] = {0};
@@ -44,19 +44,25 @@ void SharedMemory::setSharedMemory(std::string address, std::string value)
         }
     }
     int addressSpaces = len/10 + len%2;
-    for (int i = 0; i <= addressSpaces + 2; i = i + 2){
-        if ( len/10%2 != 0){
-            (*sharedMemory)[addressInt + addressSpaces - 1] = values[len/5 - 1] << 16;
+    int j = 0;
+    for (int i = 0; i < addressSpaces; i++){
+        if (i == addressSpaces - 1) {
+            if (len%2 == 0){
+                uint32_t val = values[j] << 16 ;
+                val += values[j + 1];
+                (*sharedMemory)[addressInt + j/2] = val;
+            }else{
+                (*sharedMemory)[addressInt + j/2] = values[len/5 - 1];
+            }
+            break;
         }
-        uint32_t val = values[i] << 16 ;
-        val += values[i + 1];
-        (*sharedMemory)[addressInt + i/2] = val;       
-    }  
 
-    /*
-    for (int i = addressInt; i < addressInt + addressSpaces; i++){
-        std::cout << "Address: " << i << " Value: " << (*sharedMemory)[i] << std::endl;
-    }*/
+        uint32_t val = values[j] << 16 ;
+        val += values[j + 1];
+        (*sharedMemory)[addressInt + j/2] = val;
+        j+= 2;
+    }
+    return  (*sharedMemory)[addressInt + j/2];
 }
 
 std::string SharedMemory::getSharedMemory(std::string address, std::string size){

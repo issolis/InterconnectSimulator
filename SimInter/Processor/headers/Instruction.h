@@ -12,8 +12,9 @@ class Instruction
     public:
         Instruction(std::string& instr); 
         void setNextInstr(Instruction* next); 
-        Instruction* getNextInstr(); 
-        std::string getInstr(); 
+        Instruction* getNextInstr();
+        std::string getInstr();
+        int QoS;
 
 };
 

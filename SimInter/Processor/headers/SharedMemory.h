@@ -10,7 +10,7 @@ public:
    
     std::vector<uint32_t> *sharedMemory; 
     int fromStrToInt(std::string str);
-    void setSharedMemory(std::string address, std::string value); 
+    uint32_t setSharedMemory(std::string address, std::string value);
     std::string getSharedMemory(std::string address, std::string size);
     SharedMemory();   
 };

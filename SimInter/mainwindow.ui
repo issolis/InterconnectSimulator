@@ -269,9 +269,17 @@
    </property>
    <widget class="QMenu" name="menuCargar_Memoria">
     <property name="title">
-     <string>Instrucciones</string>
+     <string>Opciones...</string>
     </property>
+    <widget class="QMenu" name="menuTipo_de_calendarizado">
+     <property name="title">
+      <string>Tipo de calendarizado...</string>
+     </property>
+     <addaction name="actionFIFO"/>
+     <addaction name="actionPrioridad"/>
+    </widget>
     <addaction name="actionCargarMemorias"/>
+    <addaction name="menuTipo_de_calendarizado"/>
    </widget>
    <addaction name="menuCargar_Memoria"/>
   </widget>
@@ -489,6 +497,22 @@
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionFIFO">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>FIFO</string>
+   </property>
+  </action>
+  <action name="actionPrioridad">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Prioridad</string>
    </property>
   </action>
  </widget>

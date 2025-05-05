@@ -85,9 +85,30 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionStep, &QAction::triggered, this, &MainWindow::onActionStepTriggered);
     connect(ui->actionRestart, &QAction::triggered, this, &MainWindow::onActionRestartTriggered);
     connect(ui->actionPause, &QAction::triggered, this, &MainWindow::onActionPauseTriggered);
+    connect(ui->actionFIFO, &QAction::triggered, this, &MainWindow::onActionFIFOTriggered);
+    connect(ui->actionPrioridad, &QAction::triggered, this, &MainWindow::onActionPrioridadTriggered);
+
+    ui->actionFIFO->setChecked(true);
+    ui->actionPrioridad->setChecked(false);
+
+
     for(int i = 0; i < 10; i++){
         limitIndex[i] = 0;
     }
+}
+
+void MainWindow::onActionFIFOTriggered(){
+    if(!ui->actionFIFO->isChecked()){
+        ui->actionFIFO->setChecked(true);
+    }
+    ui->actionPrioridad->setChecked(false);
+}
+
+void MainWindow::onActionPrioridadTriggered(){
+    if(!ui->actionPrioridad->isChecked()){
+        ui->actionPrioridad->setChecked(true);
+    }
+    ui->actionFIFO->setChecked(false);
 }
 
 void MainWindow::changeStepTime(int index){
@@ -130,10 +151,9 @@ void MainWindow::resetExecution(){
             ui->MemoryStateTable->item(block, 2)->setText("VALID");
         }
     }
-    if(stepChanges->getMemoryBlocksUpdated()->getLength() > 0){
-        qDebug() << "Length: " << stepChanges->getMemoryBlocksUpdated()->getLength();
-        for(int i = 0; i < stepChanges->getMemoryBlocksUpdated()->getLength(); i++){
-            int block = stepChanges->getMemoryBlocksUpdated()->getSlotByIndex(i)->getBlock();
+    if(stepChanges->getMemoryBlocksUpdated()->getChanges() > 0){
+        for(int i = 0; i < stepChanges->getMemoryBlocksUpdated()->getChanges(); i++){
+            int block = stepChanges->getMemoryBlocksUpdated()->getChangeByIndex(i)->getBlockUpdated();
             ui->SharedMemStateTable->item(block, 1)->setText(QString("0"));
         }
     }
@@ -231,8 +251,11 @@ void MainWindow::executeStepsInController(){
         QString rootPath = this->path;
         filePaths[i] = (rootPath.append("/InstructionsP").append(std::to_string(i + 1)).append(".txt")).toStdString();
     }
-
-    controller = new ProcessorController(*(this->workers), filePaths);
+    int scheduleType = 0;
+    if(ui->actionPrioridad->isChecked()){
+        scheduleType = 1;
+    }
+    controller = new ProcessorController(*(this->workers), filePaths, scheduleType);
     int instNum = 0;
     //Obtener todos los valores de los bloques en los procesadores
     for(int i = 0; i < 8; i++){
@@ -293,12 +316,17 @@ void MainWindow::executeStepsInController(){
         for (size_t k = 0; k < initialShared->size(); k++) {
             uint32_t value = (*initialShared)[k];
             if(value != 0){
-                //qDebug() << "Non zero: " << k << ","<< value;
-                if(!stepChanges->getMemoryBlocksUpdated()->isBlockPresent(k)){
-                    stepChanges->getMemoryBlocksUpdated()->addSlot(k);
-                    //qDebug() << "Different: " << k << ","<< value;
+                if(!stepChanges->getMemoryBlocksUpdated()->hasBlockBeenUpdated(k)){
+                    stepChanges->getMemoryBlocksUpdated()->addChange(k, value);
+                    slotThisStep->addChange(k, value);
+                }else{
+                    MemoryChange * lastMemValue = stepChanges->getMemoryBlocksUpdated()->findChangeByBlock(k);
+                    if(lastMemValue->getNewValue() != value){
+                        slotThisStep->addChange(k, value);
+                        lastMemValue->setNewValue(value);
+                    }
                 }
-                slotThisStep->addChange(k, value);
+
             }
         }
     }

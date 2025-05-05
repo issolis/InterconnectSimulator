@@ -3,7 +3,8 @@
 
 ListNode::ListNode(InstructionList &list){
     this->list = &list;
-    id = 0; 
+    id = 0;
+    next = nullptr;
 }
 
 void ListNode::setNext(ListNode *nextList)

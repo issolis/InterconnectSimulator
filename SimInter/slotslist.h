@@ -31,6 +31,8 @@ public:
     //MemoryChanges
     int getChanges(){return changesMade;}
     void addChange(int block, uint32_t value);
+    bool hasBlockBeenUpdated(int block);
+    MemoryChange * findChangeByBlock(int block);
     MemoryChange * getChangeByIndex(int index);
 
 };
