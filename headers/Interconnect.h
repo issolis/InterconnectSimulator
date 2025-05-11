@@ -30,6 +30,7 @@ public:
     SharedMemory* sharedMemory;
     std::thread monitor; 
     std::atomic<bool> running{false}; 
+    int schedulingPolicy; 
   
     void receiveMessage();
     void showStack();

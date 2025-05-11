@@ -3,28 +3,20 @@
 #include <thread>
 #include "ProcessorController.h"
 
-void pseudoMain() {
-    
-
-}
 
 int main() {
-    std::cout << " \n\n\n\nPROGRAM EXECUTION \n\n\n\n" << std::endl;
+    std::cout << " \n\n\n\nPROGRAM EXECUTION\n\n\n\n" << std::endl;
     
     std::vector<std::thread>* workers = new std::vector<std::thread>();
     ProcessorController* controller = new ProcessorController(*workers);
 
+
+    controller->interconnectBus->schedulingPolicy = 0; // 0 = FIFO , 1 = QoS
+    
     for(int i = 1; i < 11; i++) {
         controller->step(i);
     }
 
-    //controller->closeExecution();
-
-    
-
-    
-
-    //controller->completeExecution();
 
     // CRITICAL INSTRUCTION
     controller->interconnectBus->join();
@@ -34,5 +26,6 @@ int main() {
             t.join();       // Espera a que termine
         }
     }
+    
     return 0;
 }
