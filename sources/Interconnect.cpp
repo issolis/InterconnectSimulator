@@ -163,8 +163,8 @@ void Interconnect::startSnooping() {
     running = true;
     monitor = std::thread([this]() {
         while (running) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(15));
             receiveMessage(); 
-            //std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     });
 }

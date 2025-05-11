@@ -1,0 +1,177 @@
+@startuml
+class CacheMemory {
+  -cache: uint16_t[128]
+  -cacheState: std::array<std::string, 128>
+  +CacheMemory()
+  +writeMem(address: int, value: uint16_t): void
+  +changeMemState(address: int, state: std::string): void
+  +showMem(): void
+  +getCacheState(address: int): std::string
+  +getData(numLines: int, startLine: int): std::string
+}
+
+class Instruction {
+  -instr: std::string
+  -next: Instruction*
+  -QoS: int
+  +Instruction(instr: std::string&)
+  +setNextInstr(next: Instruction*): void
+  +getNextInstr(): Instruction*
+  +getInstr(): std::string
+}
+
+class InstructionList {
+  -head: Instruction*
+  -last: Instruction*
+  -size: std::atomic<int>
+  -listMutex: std::mutex
+  +InstructionList()
+  +addInstr(instr: std::string&): void
+  +addIntrIntStack(instr: std::string&): void
+  +popInstr(): void
+  +showStack(): void
+  +deleteInstr(instr: Instruction*): void
+  +getByPriority(): Instruction*
+  +getQoS(instr: std::string): int
+  +executeStackOperation(op: int, instr: std::string): char*
+  +copy(): InstructionList*
+}
+
+class InstructionMemory {
+  -head: Instruction*
+  -nextInstruction: Instruction*
+  +InstructionMemory(initializerFileName: std::string&)
+  +addInstruction(instr: std::string): void
+  +popInstr(): void
+  +showInstructionMemory(): void
+}
+
+class Interconnect {
+  -stack_mutex: std::mutex
+  -sentMutex: std::mutex
+  -monitor: std::thread
+  -running: std::atomic<bool>
+  -schedulingPolicy: int
+  +stack: InstructionList*
+  +writeCacheStack: InstructionList*
+  +responseStack: InstructionList*
+  +readStackList: List*
+  +cacheReadList: List*
+  +sharedMemory: SharedMemory*
+  +Interconnect(stack: InstructionList&, cacheWriteStack: InstructionList&, stacks: List&, cacheReadList: List&, responseStack: InstructionList&)
+  +receiveMessage(): void
+  +showStack(): void
+  +startSnooping(): void
+  +join(): void
+}
+
+class List {
+  +head: ListNode*
+  +List()
+  +getListByPos(pos: int): ListNode*
+  +show(): void
+  +insertList(id: int): void
+}
+
+class Processor {
+  +processorRead: ProcessorRead*
+  +processorWrite: ProcessorWrite*
+  +processorCache: ProcessorCache*
+  +cacheReadStack: InstructionList*
+  +cacheWriteStack: InstructionList*
+  +cacheMemory: CacheMemory*
+  +Processor(readStack: InstructionList&, writeStack: InstructionList&, readCacheStack: InstructionList&, writeCacheStack: InstructionList&, workers: std::vector<std::thread>&, fileName: std::string&, id: int)
+}
+
+class ProcessorRead {
+  +ProcessorRead(readStack: InstructionList&, worker: std::vector<std::thread>&, id: int)
+  +processorThreadFunction(instr: std::string): void
+  +processorThread(instr: std::string): void
+  +workers: std::vector<std::thread>*
+  +readStack: InstructionList*
+  +id: int
+  +isRunning: bool
+}
+
+class ProcessorWrite {
+  +ProcessorWrite(stack: InstructionList&, worker: std::vector<std::thread>&, cacheMemory: CacheMemory&, fileName: std::string&, id: int)
+  +processorThreadFunction(instr: std::string): void
+  +processorThread(instr: std::string): void
+  +sendOneInstruction(): void
+  +manipulateInstruction(str: std::string&): std::string
+  +worker: std::vector<std::thread>*
+  +id: int
+  +cacheMemory: CacheMemory*
+  +instrMem: InstructionMemory*
+  +stack: InstructionList*
+  +workers: std::vector<std::thread>*
+}
+
+class ProcessorCache {
+  +ProcessorCache(readCacheStack: InstructionList&, writeCacheStack: InstructionList&, worker: std::vector<std::thread>&, cacheMemory: CacheMemory&, id: int)
+  +processorThreadFunction(): void
+  +processorThread(): void
+  +processorWriteThreadFunction(instr: std::string): void
+  +processorWriteThread(instr: std::string): void
+  +workers: std::vector<std::thread>*
+  +readCacheStack: InstructionList*
+  +writeCacheStack: InstructionList*
+  +cacheMemory: CacheMemory*
+  +isRunning: bool
+  +id: int
+}
+
+class ProcessorController {
+  +ProcessorController(workers: std::vector<std::thread>&)
+  +step(step: int): int
+  +closeExecution(): void
+  +completeExecution(): int
+  +previous: int
+  +workers: std::vector<std::thread>*
+  +writeStack: InstructionList*
+  +writeCacheStack: InstructionList*
+  +processorsWrite: std::vector<ProcessorWrite>
+  +processorsRead: std::vector<ProcessorRead>
+  +processors: std::vector<Processor>
+  +readStacks: std::vector<InstructionList>
+  +paths: std::string[8]
+  +readStackList: List*
+  +readCacheStackList: List*
+  +interconnectBus: Interconnect*
+  +responsesStack: InstructionList*
+  +requestStack: InstructionList*
+}
+
+class SharedMemory {
+  +SharedMemory()
+  +fromStrToInt(str: std::string): int
+  +setSharedMemory(address: std::string, value: std::string): uint32_t
+  +getSharedMemory(address: std::string, size: std::string): std::string
+  +sharedMemory: std::vector<uint32_t>*
+}
+
+' Relationships
+InstructionList "1" *-- "0..*" Instruction : contains >
+InstructionMemory "1" *-- "0..*" Instruction : contains >
+Interconnect "1" --> "1" InstructionList : uses
+Interconnect "1" --> "1" List : uses
+Interconnect "1" --> "1" SharedMemory : uses
+List "1" *-- "0..*" ListNode : contains >
+CacheMemory -- Instruction : "0..*" 
+Processor "1" *-- "1" ProcessorRead : contains
+Processor "1" *-- "1" ProcessorWrite : contains
+Processor "1" *-- "1" ProcessorCache : contains
+Processor "1" --> "1" InstructionList : uses
+Processor "1" --> "1" CacheMemory : uses
+ProcessorWrite --> InstructionList
+ProcessorWrite --> CacheMemory
+ProcessorWrite --> InstructionMemory
+ProcessorRead --> InstructionList
+ProcessorController --> InstructionList
+ProcessorController --> Interconnect
+ProcessorController --> Processor
+ProcessorController --> ProcessorRead
+ProcessorController --> ProcessorWrite
+ProcessorController --> List
+SharedMemory --> List
+@enduml

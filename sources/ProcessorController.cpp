@@ -59,12 +59,13 @@ int ProcessorController::step(int step){
         responsesStack->executeStackOperation(2, "NOINSTR");
     }   
     std::cout << "_________________________________" << std::endl;
-
+    /*
     std::cout << "caches" << std::endl;
     for (int i = 0; i < 17; i++) {
         std::cout << "Cache " << 1 << " " << i << ": " << processors[1].processorCache->cacheMemory->cacheState[i] << std::endl;
     }
     std::cout << "_________________________________" << std::endl;
+    */
 
 
     return 1; 
@@ -72,7 +73,7 @@ int ProcessorController::step(int step){
 }
 
 void ProcessorController::closeExecution(){
-    interconnectBus->running = false;
+    //interconnectBus->running = false;
     for(int i = 0; i < 8; i++){
         processors[i].processorRead->isRunning = false;
         processors[i].processorCache->isRunning = false;
